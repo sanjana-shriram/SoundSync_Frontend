@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+  <title>This is the instrument selection page</title>
+  <body>
+    <h1>
+      This is the instrument selection page and the upload music and MIDI file
+      page.
+    </h1>
+    <label for="instruments">Choose your instrument:</label>
+    <select name="instruments" id="instruments">
+      <option value="violin">Violin</option>
+      <option value="viola">Viola</option>
+      <option value="cello">Cello</option>
+      <option value="bass">Bass</option>
+    </select>
+    <a href="{% url 'consentPage' %}">Back to consent page</a>
+    <a href="{% url 'eyeCalibrationPage' %}">Back to eye calibration</a>
+  </body>
+</head>
