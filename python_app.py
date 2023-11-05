@@ -2,8 +2,8 @@ from PIL import Image, ImageTk
 import PyPDF2
 import tkinter as tk
 from tkinter.filedialog import askopenfile
-from tkinter import font as tkfont
-
+# from tkinter import font as tkfont
+from pdf2image import convert_from_path
 
 '''
 class MainFrame(tk.Tk):
@@ -120,7 +120,18 @@ logo_label.grid(column=1, row=0)
 # Instructions/welcome
 instructions = tk.Label(
     root, text="Select a PDF file of your music from your computer.", font="Raleway")
-instructions.grid(columnspan=3, column=0, row=1, padx=75, pady=5)
+instructions.grid(columnspan=3, column=0, row=1)
+
+pages = convert_from_path('scale.pdf', 500)
+for count, page in enumerate(pages):
+    page.save(f'out{count}.jpg', 'JPEG')
+
+p = Image.open('out0.jpg')
+p = p.resize((600, 800))
+p = ImageTk.PhotoImage(p)
+p_label = tk.Label(image=p)
+p_label.image = p
+p_label.grid(column=1, row=1)
 
 
 def pdf_to_img(page_num):
@@ -147,50 +158,40 @@ def show_image():
 
 
 def open_file():
-    browse_text.set("loading...")
-    file = askopenfile(parent=root, mode='rb', title='Select a PDF file', filetypes=[
-                       ('PDF files', '*.pdf')])
+    # browse_text.set("loading...")
+    # file = askopenfile(parent=root, mode='rb', title='Select a PDF file', filetypes=[
+    #                    ('PDF files', '*.pdf')])
 
-    if file:
+    # if file:
+    #     read_pdf = PyPDF2.PdfReader(file)
+    #     page = read_pdf.pages[0]
+    #     page_content = page.extract_text()
+    #     print(page_content)
 
-        doc = fitz.open(file)  # Open the PDF file using PyMuPDF
-        # transformation matrix we can apply on pages
-        zoom = 1
-        mat = fitz.Matrix(zoom, zoom)
-       # count number of pages
-        num_pages = 0
-        for p in doc:
-            num_pages += 1
+    #     # text box
+    #     text_box = tk.Text(root, height=10, width=50, padx=15, pady=15)
+    #     text_box.insert(1.0, page_content)
+    #     # text_box.grid(column=1, row=3)
+    #     browse_text.set("Browse")
 
-        # read_pdf = PyPDF2.PdfReader(file)
+    #     set_pdf_pages(read_pdf)
+    pass
 
-        # page = read_pdf.pages[0]  # Get the first page of the PDF
-        # img = page.to_pil()  # Convert the PDF page to PIL (Pillow) image
-        # img = img.resize((600, 400))  # Resize the image to fit the canvas
 
-        # # Convert the PIL image to PhotoImage to display it in tkinter canvas
-        # self.image = ImageTk.PhotoImage(img)
+def set_pdf_pages(read_pdf):
 
-        # # Clear the canvas before displaying the new image
-        # # self.canvas.delete("all")
-        # self.canvas.create_image(0, 0, anchor="nw", image=self.image)
-        browse_text.set("Browse Files")
-
-        # page = read_pdf.pages[0]
-        # page_content = page.extract_text()
-        # print(page_content)
-
-        # # text box
-        # text_box = tk.Text(root, height=10, width=50, padx=15, pady=15)
-        # text_box.insert(1.0, page_content)
-        # text_box.grid(column=1, row=3)
-
-        # browse_text.set("Browse")
+    read_pdf[0].save('page0.jpg', 'JPEG')
+    mypage = Image.open('page0.jpg')
+    mypage = mypage.resize((350, 85))
+    mypage = ImageTk.PhotoImage(mypage)
+    page_label = tk.Label(image=mypage)
+    page_label.image = mypage
+    page_label.grid(column=1, row=2)
 
 
 browse_text = tk.StringVar()
 browse_btn = tk.Button(root, textvariable=browse_text, command=lambda: open_file(),
-                       font="Raleway", bg="blue", fg="black", height=2, width=15)
+                       font="Raleway", bg="#20bebe", fg="white", height=2, width=15)
 browse_text.set("Browse Files")
 browse_btn.grid(column=1, row=2)
 
