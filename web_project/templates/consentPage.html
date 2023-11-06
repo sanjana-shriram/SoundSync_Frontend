@@ -1,11 +1,107 @@
 <!DOCTYPE html>
 <head>
   <title>This is the consent page</title>
-  <body>
-    <h1>
-      This is the first screen a user would see. This will ask about microphone
-      and eye tracking camera permissions.
-    </h1>
-    <a href="{%url 'eyeCalibrationPage' %}">Calibrate Eyes</a>
-  </body>
+  <link rel="stylesheet" src="/../style.css" />
 </head>
+
+<body>
+  <h1>Welcome to SoundSync</h1>
+
+  <div
+    style="
+      height: 400px;
+      width: 600px;
+      border: 2px solid #b6b6b6;
+      /* font: 16px/26px Georgia, Garamond, Serif; */
+      overflow: auto;
+    "
+  >
+    <h2>Terms and Conditions</h2>
+    Welcome to SoundSync! By using our eye tracking software application and
+    associated services, you agree to comply with and be bound by the following
+    terms and conditions of use. Please read these terms and conditions
+    carefully before using the product.
+    <ol>
+      <li>
+        User Privacy and Data Collection
+        <ul>
+          <li>1.1 Eye Tracking:</li>
+          SoundSync utilizes eye tracking technology to enhance user experience
+          and interaction. By using SoundSync, you consent to the collection and
+          processing of your eye movement data to improve the functionality and
+          performance of SoundSync.
+        </ul>
+        <ul>
+          <li>1.2 Microphone Usage:</li>
+          SoundSync will use a microphone to record ambient audio while
+          SoundSync is in use. The recorded audio is processed to enhance user
+          experience and is not stored or shared with third parties.
+        </ul>
+      </li>
+      <li>
+        Data Security and Confidentiality
+        <ul>
+          <li>2.1 Data Security:</li>
+          We employ industry-standard security measures to protect your data
+          from unauthorized access, alteration, disclosure, or destruction.
+        </ul>
+        <ul>
+          <li>2.2 Confidentiality:</li>
+          We respect your privacy and confidentiality. User data, including eye
+          movement data and recorded audio, is treated as confidential and is
+          used solely for improving SoundSync's functionality and user
+          experience.
+        </ul>
+      </li>
+
+      <li>
+        User Responsibilities
+        <ul>
+          <li>3.1 Accuracy of Information:</li>
+          You are responsible for providing accurate and complete information
+          during the use of SoundSync.
+        </ul>
+        <ul>
+          <li>3.2 User Conduct:</li>
+          You agree to use SoundSync in compliance with applicable laws and
+          regulations and refrain from engaging in any harmful or malicious
+          activities.
+        </ul>
+      </li>
+
+      <li>
+        Limitation of Liability
+        <ul>
+          <li>4.1 Disclaimer:</li>
+          SoundSync is provided on an "as-is" and "as-available" basis. We do
+          not guarantee the accuracy, reliability, or availability of SoundSync.
+        </ul>
+        <ul>
+          <li>4.2 Limitation of Liability:</li>
+          To the extent permitted by law, we shall not be liable for any
+          indirect, incidental, special, consequential, or punitive damages, or
+          any loss of profits or revenues.
+        </ul>
+      </li>
+      <li>
+        Changes to Terms and Conditions
+        <ul>
+          <li>5.1 Updates:</li>
+          We reserve the right to modify, amend, or replace these terms and
+          conditions at any time. Your continued use of SoundSync following the
+          posting of changes constitutes your acceptance of such changes.
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="tacbox">
+    <input id="checkbox" type="checkbox" />
+    <label for="checkbox">
+      By using SoundSync, I acknowledge that I have read, understood, and agree
+      to these Terms and Conditions.</label
+    >
+  </div>
+
+  <a href="{%url 'eyeCalibrationPage' %}">Calibrate Eyes</a>
+</body>

@@ -1,52 +1,76 @@
-import tkinter as tk
-from tkinter.filedialog import askopenfilename
-import fitz  # PyMuPDF library
+# Code Citation: https://www.tutorialspoint.com/how-to-add-pdf-in-tkinter-gui-python
+import fitz
+from tkinter import *
+from PIL import Image, ImageTk
+
+# open pdf file
+file_name = "sheetMusic.pdf"
+doc = fitz.open(file_name)
+
+# transformation matrix we can apply on pages
+zoom = 1.1
+mat = fitz.Matrix(zoom, zoom)
+
+# count number of pages
+num_pages = 0
+for p in doc:
+    num_pages += 1
 
 
-class PDFViewer(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.geometry("800x600")
-        self.canvas = tk.Canvas(self, width=600, height=400)
-        self.canvas.grid(row=0, column=0, columnspan=3)
-        self.current_page = 0
+# initialize and set screen size
+root = Tk()
+root.geometry('950x900')
 
-        # Create buttons for navigation
-        prev_button = tk.Button(
-            self, text="Previous Page", command=self.show_previous_page)
-        prev_button.grid(row=1, column=0)
-        next_button = tk.Button(self, text="Next Page",
-                                command=self.show_next_page)
-        next_button.grid(row=1, column=1)
+# add scroll bar
+scrollbar = Scrollbar(root)
+scrollbar.pack(side=RIGHT, fill=Y)
 
-        browse_button = tk.Button(
-            self, text="Browse PDF", command=self.open_pdf)
-        browse_button.grid(row=1, column=2)
+# add canvas
+canvas = Canvas(root, yscrollcommand=scrollbar.set)
+canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
-    def open_pdf(self):
-        file_path = askopenfilename(filetypes=[("PDF files", "*.pdf")])
-        if file_path:
-            self.pdf_document = fitz.open(file_path)
-            self.show_current_page()
+# define entry point (field for taking inputs)
+entry = Entry(root)
 
-    def show_current_page(self):
-        page = self.pdf_document.load_page(self.current_page)
-        pix = page.get_pixmap()
-        img = tk.PhotoImage(data=pix.samples)
-        self.canvas.create_image(0, 0, anchor="nw", image=img)
-        self.canvas.image = img  # Keep a reference to the image object
-
-    def show_previous_page(self):
-        if self.current_page > 0:
-            self.current_page -= 1
-            self.show_current_page()
-
-    def show_next_page(self):
-        if self.current_page < len(self.pdf_document) - 1:
-            self.current_page += 1
-            self.show_current_page()
+# add a label for the entry point
+label = Label(root, text="Enter page number to display:")
 
 
-if __name__ == "__main__":
-    app = PDFViewer()
-    app.mainloop()
+def pdf_to_img(page_num):
+    page = doc.load_page(page_num)
+    pix = page.get_pixmap(matrix=mat)
+    return Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+
+
+def show_image():
+    try:
+        page_num = int(entry.get()) - 1
+        assert page_num >= 0 and page_num < num_pages
+        im = pdf_to_img(page_num)
+        img_tk = ImageTk.PhotoImage(im)
+        frame = Frame(canvas)
+        panel = Label(frame, image=img_tk)
+        panel.pack(side="bottom", fill="both", expand="yes")
+        frame.image = img_tk
+        canvas.create_window(0, 0, anchor='nw', window=frame)
+        frame.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
+    except:
+        pass
+
+
+# add button to display pages
+button = Button(root, text="Show Page", command=show_image)
+
+# set visual locations
+label.pack(side=TOP, fill=None)
+entry.pack(side=TOP, fill=BOTH, padx=20)
+button.pack(side=TOP, fill=None, padx=20, pady=10)
+
+entry.insert(0, '1')
+show_image()
+
+scrollbar.config(command=canvas.yview)
+root.mainloop()
+
+doc.close()
