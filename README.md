@@ -14,5 +14,9 @@ brew install poppler
 /usr/local/bin/python3.10
 virtualenv -p /usr/local/bin/python3.10/bin/python3.11 myenv
 
-You need to be in my virtual environemtn, called (myenv)
+You need to be in my virtual environemtn, called (venv)
 this has python 3.10.11 installed and is comptaible with tkinter
+
+Powershell:
+Install a Django environment:
+pip install django
