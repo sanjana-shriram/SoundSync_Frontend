@@ -20,3 +20,5 @@ this has python 3.10.11 installed and is comptaible with tkinter
 Powershell:
 Install a Django environment:
 pip install django
+cd into /Scripts
+.\Activate.ps1
