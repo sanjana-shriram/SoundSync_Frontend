@@ -12,3 +12,7 @@ def eyeCalibrationPage(request):
 
 def instrumentPage(request):
     return render(request, 'instrumentPage.html')
+
+
+def playPage(request):
+    return render(request, 'playPage.html')

@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <head>
-  <title>This is the instrument selection page</title>
+  <title>Upload</title>
   <body>
-    <h1>
-      This is the instrument selection page and the upload music and MIDI file
-      page.
-    </h1>
-    <label for="instruments">Choose your instrument:</label>
-    <select name="instruments" id="instruments">
-      <option value="violin">Violin</option>
-      <option value="viola">Viola</option>
-      <option value="cello">Cello</option>
-      <option value="bass">Bass</option>
-    </select>
-    <a href="{% url 'consentPage' %}">Back to consent page</a>
-    <a href="{% url 'eyeCalibrationPage' %}">Back to eye calibration</a>
+    <h1>File Upload and Instrument Selection</h1>
+    <div>
+      <label for="instruments">Choose your instrument:</label>
+
+      <select name="instruments" id="instruments">
+        <option value="none" selected disabled hidden>Select an Option</option>
+        <option value="violin">Violin</option>
+        <option value="viola">Viola</option>
+        <option value="cello">Cello</option>
+        <option value="flute">Flute</option>
+        <option value="oboe">Oboe</option>
+        <option value="clarinet">Clarinet</option>
+        <option value="trumpet">Trumpet</option>
+        <option value="bassoon">Bassoon</option>
+        <option value="trombone">Trombone</option>
+        <option value="tuba">Tuba</option>
+      </select>
+    </div>
+
+    <div>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Select a File</label>
+        <input id="file" name="file" type="file" />
+        <button>Upload</button>
+      </form>
+    </div>
+
+    <div>
+      <a href="{% url 'consentPage' %}">Back </a>
+    </div>
+    <div>
+      <a href="{% url 'eyeCalibrationPage' %}">Next Page</a>
+    </div>
   </body>
 </head>

@@ -24,5 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', index.consentPage, name="consentPage"),
     path('eyeCalibration/', index.eyeCalibrationPage, name="eyeCalibrationPage"),
-    path('instrument/', index.instrumentPage, name="instrumentPage")
+    path('instrument/', index.instrumentPage, name="instrumentPage"),
+    path('play/', index.playPage, name="playPage")
+
 ]
