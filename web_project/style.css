@@ -14,3 +14,11 @@ input {
   width: 2em; 
   vertical-align: middle;
 }
+
+label {
+  /* Other styling... */
+  text-align: right;
+  clear: both;
+  float:left;
+  margin-right:15px;
+}
