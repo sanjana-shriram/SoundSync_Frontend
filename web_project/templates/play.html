@@ -1,4 +1,4 @@
-{% load static %}
+{% extends "base.html" %} {% block content %} {% load static %}
 <!DOCTYPE html>
 <head>
   <title>Play</title>
@@ -10,9 +10,6 @@
         width="500px"
         height="700px"
       />
-    </div>
-    <div>
-      <a href="{% url 'calibrate' %}">Back </a>
     </div>
   </body>
 </head>
@@ -39,3 +36,5 @@
   ></embed>
 
  -->
+
+{% endblock %}

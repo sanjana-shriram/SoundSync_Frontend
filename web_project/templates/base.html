@@ -3,20 +3,61 @@
   <head>
     <meta charset="utf-8" />
     {% load static %}
-    <link href="{% static 'app/base.css' %}" rel="stylesheet" type="text/css" />
-    <title>{% block title %} AddrBook {% endblock %}</title>
+    <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
+    <title>{% block title %}SoundSync{% endblock %}</title>
+    <!-- <style>
+      /* h1 {
+        color: rgb(86, 114, 178);
+        margin-left: 30px;
+        margin-right: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #f0f0f0;
+      } */
+
+      div {
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+      .header {
+        color: rgb(86, 114, 178);
+        margin: 30px 30px 30px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 10px;
+        background-color: #f0f0f0;
+        width: 600px;
+      }
+
+      .navbar {
+        align-items: right;
+        margin-right: 30px;
+        margin-left: 30px;
+        float: right;
+      }
+      .navbar-links {
+        display: flex;
+        gap: 20px;
+      }
+    </style> -->
   </head>
-
   <body>
-    <div class="big-heading">Web App Address Book Example</div>
-
-    <div class="user-info">{% block user-info %} {% endblock %}</div>
-
-    <div class="search-bar">{% block search-bar %} {% endblock %}</div>
-
-    {% if message %}
-    <div class="message">{{message}}</div>
-    {% endif %}
+    <div class="header">
+      <div class="big-heading">
+        <h1>SoundSync</h1>
+      </div>
+      <div class="navbar">
+        <div class="navbar-links">
+          <a href="{% url 'consent' %}">Consent</a>
+          <a href="{% url 'calibrate' %}">Calibrate</a>
+          <a href="{% url 'upload' %}">Upload</a>
+          <a href="{% url 'play' %}">Play</a>
+        </div>
+      </div>
+    </div>
 
     <div class="content">{% block content %} {% endblock %}</div>
   </body>
