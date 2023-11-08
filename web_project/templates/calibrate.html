@@ -2,13 +2,21 @@
 
 <!DOCTYPE html>
 <head>
-  <title>Calibration</title>
+  <meta charset="utf-8" />
+  {% load static %}
+  <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
+  <title>{% block title %}Calibration{% endblock %}</title>
+
   <body>
-    <h1>Calibrate your eyes now.</h1>
-    <h2>Ensure no direct light falls on the eye tracking camera.</h2>
-    <h3>Placeholder for eye tracking calibration steps.</h3>
-    <div>
-      <a href="{% url 'play' %}">Next page</a>
+    <div class="box">
+      <div style="margin: 15px 15px 15px 15px">
+        Calibrate your eyes now. Ensure no direct light falls on the eye
+        tracking camera. This page is currently acting as a placeholder for the
+        Tobii Eye Tracking calibration steps.
+      </div>
+      <div>
+        <a class="button" href="{% url 'play' %}">Next page</a>
+      </div>
     </div>
   </body>
 </head>

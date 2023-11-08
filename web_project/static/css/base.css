@@ -1,68 +1,118 @@
-.big-heading {
-    font-size: xx-large;
-    font-weight: bold;
-    font-family: sans-serif;
-    text-align: center;
-    padding: 25px 50px;
-    color:blue;
-    background-color: blueviolet;
-}
+/* Color Theme*/
+/* darkest
+#5672b2
+#6383cc
+#87a3e7
+#b7c7ed
+#f0f0f0 (grey)
+lightest */ 
 
-#header {
-    font-size: xx-large;
-    font-weight: bold;
-    font-family: sans-serif;
-    text-align: center;
-    padding: 25px 50px;
-    color:blue;
-    background-color: blueviolet;
-}
 
-h1 {
-    color: rgb(86, 114, 178);
-    margin-left: 30px;
-    margin-right: 30px;
+/* Base.HTML */
+.header {
+    color: #5672b2;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
     background-color: #f0f0f0;
-}
-
-.user-info {
-    text-align: right;
-    font-family: sans-serif; 
-    padding-right: 10px;
-    font-size: x-large;
-}
-
-.message {
-    color:blue;
-    text-align: center;
-    font-weight: bold;
-    font-size: x-large;
+    width: 600px;
     font-family: sans-serif;
-    padding: 25px 50px;
 }
 
-.search-bar {
-    text-align: center;
-    padding: 25px 50px;
+.big-heading {
+    font-size: xx-large;
+    font-weight: bold;
+    padding: 10px 10px;
 }
+
+div {
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.navbar {
+    align-items: right;
+    margin-right: 30px;
+    margin-left: 30px;
+    float: right;
+  }
+  
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
 
 .content {
     margin-left: auto;
     margin-right: auto;
-    width: 70%;
+    overflow: auto;
     font-family: sans-serif;
-    font-size: x-large;
-    padding: 25px 50px;
 }
 
-.error {
+
+/* consent.HTML */
+label {
+    text-align: right;
+    clear: both;
+    float: left;
+    /* margin-right: 15px; */
+  }
+
+  h2 {
+    color: #5672b2;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  h4 {
+    color: rgb(45, 51, 65);
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  li {
+    margin: 10px 10px 10px 10px;
+  }
+
+  .button {
+    display: inline-block;
+    background-color: #87a3e7; /* Set your desired button color */
+    color: white;
+    padding: 5px 10px; /*Adjust padding to fit your text */
+    border-radius: 25px; /* Rounds the button corners, adjust the value for a more/less rounded button */
+    text-decoration: none; /* Remove underline from the link */
+    /* font-family: Arial, sans-serif; Set your desired font family */
+    font-size: 16px; /* Set your desired font size */
+    border: 2px solid #5672b2; /* Border color, same as background color for consistency */
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+  }
+
+  .button:hover {
+    background-color: #87a3e7;
+    border-color: #5672b2;
+  }
+
+  .button:active {
+    background-color:#6383cc; /* Change the color when the button is clicked */
+    border-color: #5672b2; /* Change border color when the button is clicked */
+  }
+  
+.box {
+    height: 820px;
+    width: 594px;
+    border: 3px solid #9cb1dc;
+    overflow: auto;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+/* .error {
     color:red;
-}
-
+} */
+/* 
 .list {
     padding: 3px;
 }
@@ -88,17 +138,17 @@ a {
 button {
     font-size: x-large;
     padding: 3px;
-}
-
+} */
+/* 
 input {
     font-size: x-large;
-}
+} */
 
-div, form {
+/* div, form {
     padding: 4px;
-}
+} */
 
-
+/* 
 .navlink {
     background-color: lightgray;
 }
@@ -112,4 +162,4 @@ div, form {
 
 .letter:hover {
      background-color:lightgray;
-}
+} */

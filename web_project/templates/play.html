@@ -1,18 +1,26 @@
 {% extends "base.html" %} {% block content %} {% load static %}
 <!DOCTYPE html>
 <head>
-  <title>Play</title>
-  <body>
-    <h1>Performance Page</h1>
-    <div>
-      <img
-        src="https://amybarickman.com/wp-content/uploads/2014/08/EVSI79-scaled.jpg"
-        width="500px"
-        height="700px"
-      />
-    </div>
-  </body>
+  <meta charset="utf-8" />
+  {% load static %}
+  <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
+  <title>{% block title %}Play{% endblock %}</title>
 </head>
+<body>
+  <div class="box">
+    
+    <embed
+      src="../static/demo.pdf"
+      type="application/pdf"
+      accept="application/pdf"
+      height="820px"
+      frameBorder="0"
+      scrolling="auto"
+      height="100%"
+      width="100%"
+  ></embed>
+  </div>
+</body>
 
 <!-- 
 

@@ -2,46 +2,13 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
-  <title>This is the consent page</title>
-  <style>
-    label {
-      text-align: right;
-      clear: both;
-      float: left;
-      margin-right: 15px;
-    }
-
-    h2 {
-      color: #9cb1dc;
-      margin-left: 15px;
-      margin-right: 15px;
-    }
-
-    h4 {
-      color: rgb(45, 51, 65);
-      margin-left: 15px;
-      margin-right: 15px;
-    }
-
-    li {
-      margin: 10px 10px 10px 10px;
-    }
-  </style>
+  {% load static %}
+  <link href="../static/css/base.css" rel="stylesheet" type="text/css" />
+  <title>{% block title %}Consent{% endblock %}</title>
 </head>
 
 <body>
-  <div
-    class="terms"
-    style="
-      height: 600px;
-      width: 600px;
-      border: 3px solid #9cb1dc;
-      /* font: 16px/26px Georgia, Garamond, Serif; */
-      overflow: auto;
-      margin-right: 15px;
-      margin-left: 15px;
-    "
-  >
+  <div class="box">
     <h2>Terms and Conditions</h2>
 
     <div>
@@ -122,19 +89,14 @@
         </ul>
       </li>
     </ol>
-  </div>
 
-  <div class="form-group">
-    <form method="post" onsubmit="termsFunction()">
-      <input type="checkbox" id="checkbox" name="checkbox" /><br />
-      <label for="checkbox"
-        >By using SoundSync, I acknowledge that I have read and agree to these
-        Terms and Conditions.</label
-      ><br />
-    </form>
-  </div>
-  <div>
-    <a id="text" href="{%url 'upload' %}">Next page</a>
+    <div>
+      By using SoundSync, I acknowledge that I have read the Terms and
+      Conditions.
+    </div>
+    <div>
+      <a id="text" class="button" href="{%url 'upload' %}">Next page</a>
+    </div>
   </div>
 </body>
 {% endblock %}
