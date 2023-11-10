@@ -16,14 +16,60 @@
 
     <form
       enctype="multipart/form-data"
+      action="{% url 'choose-instrument' %}"
+      method="post"
+      class="add-form"
+    >
+      <div>Select your instrument:</div>
+      <table>
+        {% for field in form.visible_fields %}
+        <tr>
+          <td>{{field}}</td>
+          <td class="error">
+            {% for error in field.errors %} {{error}} {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="3"><input type="submit" value="Submit" /></td>
+        </tr>
+      </table>
+      {% csrf_token %}
+    </form>
+
+    <form
+      enctype="multipart/form-data"
       action="{% url 'upload-music' %}"
       method="post"
       class="add-form"
     >
+      <div>Upload a PDF:</div>
       <table>
-        {% for field in form.visible_fields %}
+        {% for field in pdfForm.visible_fields %}
         <tr>
-          <td>{{field.label_tag}}</td>
+          <td>{{field}}</td>
+          <td class="error">
+            {% for error in field.errors %} {{error}} {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="3"><input type="submit" value="Submit" /></td>
+        </tr>
+      </table>
+      {% csrf_token %}
+    </form>
+
+    <form
+      enctype="multipart/form-data"
+      action="{% url 'upload-midi' %}"
+      method="post"
+      class="add-form"
+    >
+      <div>Upload a MIDI File:</div>
+      <table>
+        {% for field in midiForm.visible_fields %}
+        <tr>
           <td>{{field}}</td>
           <td class="error">
             {% for error in field.errors %} {{error}} {% endfor %}
