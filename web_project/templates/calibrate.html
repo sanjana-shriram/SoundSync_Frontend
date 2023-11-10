@@ -10,12 +10,20 @@
   <body>
     <div class="box">
       <div style="margin: 15px 15px 15px 15px">
-        Calibrate your eyes now. Ensure no direct light falls on the eye
-        tracking camera. This page is currently acting as a placeholder for the
-        Tobii Eye Tracking calibration steps.
+        Setup the Tobii Eye Tracker 5 and calibrate your eyes now. Plug in the
+        Tobii Eye Tracker. If the installation doesn't begin, follow
+        <a
+          href="https://apps.microsoft.com/detail/tobii-experience/9NK75KF67S2N?hl=en-US&gl=US"
+          target="_blank"
+        >
+          this link</a
+        >. Download the Tobii Experience App for Windows and follow directions.
+        Proceed to next page once the tracker is set up and after eye
+        calibration.
       </div>
+
       <div>
-        <a class="button" href="{% url 'play' %}">Next page</a>
+        <a class="button" href="{% url 'upload' %}">Next page</a>
       </div>
     </div>
   </body>

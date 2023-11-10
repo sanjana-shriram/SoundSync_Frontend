@@ -11,34 +11,34 @@
 <body>
   <div class="box">
     <h2>File Upload and Instrument Selection</h2>
-    <div>
-      <label for="instruments">Choose your instrument:</label>
-      <select name="instruments" id="instruments">
-        <option value="none" selected disabled hidden>Select an Option</option>
-        <option value="violin">Violin</option>
-        <option value="viola">Viola</option>
-        <option value="cello">Cello</option>
-        <option value="flute">Flute</option>
-        <option value="oboe">Oboe</option>
-        <option value="clarinet">Clarinet</option>
-        <option value="trumpet">Trumpet</option>
-        <option value="bassoon">Bassoon</option>
-        <option value="trombone">Trombone</option>
-        <option value="tuba">Tuba</option>
-      </select>
-    </div>
+
+    <div class="error">{{message}}</div>
+
+    <form
+      enctype="multipart/form-data"
+      action="{% url 'upload-music' %}"
+      method="post"
+      class="add-form"
+    >
+      <table>
+        {% for field in form.visible_fields %}
+        <tr>
+          <td>{{field.label_tag}}</td>
+          <td>{{field}}</td>
+          <td class="error">
+            {% for error in field.errors %} {{error}} {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="3"><input type="submit" value="Submit" /></td>
+        </tr>
+      </table>
+      {% csrf_token %}
+    </form>
 
     <div>
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file">Select a File</label>
-        <input id="file" name="file" type="file" />
-        <button>Upload</button>
-      </form>
-    </div>
-
-    <div>
-      <a class="button" href="{% url 'calibrate' %}">Next Page</a>
+      <a class="button" href="{% url 'play' %}">Next Page</a>
     </div>
   </div>
 </body>
