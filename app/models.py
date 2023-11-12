@@ -2,13 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-def files_upload_path(instance, filename):
-    return f'outputs/{filename}'
+# def files_upload_path(instance, filename):
+#     return f'outputs/{filename}'
 
 
 class Upload(models.Model):
     # text = models.CharField(max_length=200)
-    pdf = models.FileField(upload_to=files_upload_path)
+    pdf = models.FileField(upload_to='outputs/')
     # midi = models.FileField(blank=True)
     # ORCHESTRA_INSTRUMENT_CHOICES = [
     #     ('violin', 'Violin'),
