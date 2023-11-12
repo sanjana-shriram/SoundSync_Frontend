@@ -9,7 +9,13 @@ urlpatterns = [
     path('calibrate', views.calibrate_action, name='calibrate'),
     path('upload', views.upload_action, name='upload'),
     path('play', views.play_action, name='play'),
-    path('choose-instrument', views.choose_instrument, name='choose-instrument'),
-    path('upload-music', views.upload_music, name='upload-music'),
-    path('upload-midi', views.upload_midi, name='upload-midi'),
+    path('upload-pdf', views.upload_pdf, name='upload-pdf'),
+
+    # path('upload-process', views.upload_process, name='upload-process'),
+    # path('upload/<int:id>', views.get_uploads, name='get-upload'),
+
+    # path('show-pdf/', views.show_pdf, name='show-pdf'),
+    # path('choose-instrument', views.choose_instrument, name='choose-instrument'),
+    # path('upload-music', views.upload_music, name='upload-music'),
+    # path('upload-midi', views.upload_midi, name='upload-midi'),
 ]
