@@ -10,6 +10,7 @@ pip3 install PyPDF2
 pip3 install Pillow
 pip3 install pdf2image
 brew install poppler
+pip install pdf2image
 
 /usr/local/bin/python3.10
 virtualenv -p /usr/local/bin/python3.10/bin/python3.11 myenv

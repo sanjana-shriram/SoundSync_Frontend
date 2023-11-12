@@ -6,8 +6,12 @@ import os
 # from app.forms import PDFForm, MidiForm, InstrumentForm
 from app.models import Upload
 from app.forms import UploadForm
+from pdf2image import convert_from_path
 
 from django.http import FileResponse, Http404
+
+import PyPDF2
+import fitz
 
 
 def home(request):
@@ -42,6 +46,14 @@ def upload_pdf(request):
             with open(os.path.join(output_folder, pdf_file.name), 'wb+') as destination:
                 for chunk in pdf_file.chunks():
                     destination.write(chunk)
+            # Save PDF as images
+            pdf_path = os.path.join(output_folder, pdf_file.name)
+            # Iterate through each page
+            images = convert_from_path(pdf_path)
+
+            for i in range(len(images)):
+                # Save pages as images in the pdf
+                images[i].save('page' + str(i) + '.jpg', 'JPEG')
 
             return render(request, 'upload.html', {'uploadForm': form})
     else:
