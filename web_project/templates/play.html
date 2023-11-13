@@ -9,9 +9,17 @@
 <body>
   <div class="box">
     <!-- code to find pdf file in outputs -->
-   
+    <!-- {% for image in images_list %} -->
+    <img
+      src="../../page0.jpg"
+      alt="page {{ forloop.counter }}"
+      width="400"
+      height="600"
+    />
+    <!-- {% endfor %} -->
+
     <embed
-      src="../../app/outputs/sample.pdf"
+      src="{{ pdf_file.pdf_file.url }}"
       type="application/pdf"
       accept="application/pdf"
       height="800px"
@@ -19,7 +27,7 @@
       scrolling="auto"
       height="100%"
       width="100%"
-  ></embed>
+    />
   </div>
 </body>
 

@@ -46,25 +46,29 @@ def upload_pdf(request):
                     destination.write(chunk)
             # Save PDF as images
             pdf_path = os.path.join(output_folder, pdf_file.name)
+            print("pdf path!", pdf_path)
             # Iterate through each page
             images = convert_from_path(pdf_path)
-            for i in range(len(images)):
-                images[i].save('page' + str(i) + '.jpg', 'JPEG')
+            images_list = []
 
-            return render(request, 'upload.html', {'uploadForm': form})
+            for i in range(len(images)):
+                image_path = os.path.join(os.path.dirname(
+                    os.path.abspath(__file__)),  'outputs')
+                images[i].save(image_path + 'page' + str(i) + '.jpg',  'JPEG')
+                images_list.append(os.path.join(
+                    pdf_path, '../../../' + 'page' + str(i) + '.jpg'))
+            print("IMAGES LIST YOI", images_list)
+            return render(request, 'play.html', {'images_list': images_list})
     else:
         form = UploadForm()
     return render(request, 'upload.html', {'uploadForm': form})
 
 
 def play_action(request):
-    context = {}
-    # try:
-    #     return FileResponse(open('demo_music.pdf', 'rb'), content_type='application/pdf')
-    # except FileNotFoundError:
-    #     raise Http404()
-    return render(request, 'play.html', context)
-
+    pdf_files = ['page0.jpg', 'page1.jpg']
+    # for obj in Upload.objects.all():
+    #     pdf_files.append(obj.pdf)
+    return render(request, 'play.html', {"pdf_files": pdf_files})
 
 # def choose_instrument(request):
 #     if request.method == 'POST':
