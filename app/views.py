@@ -7,9 +7,7 @@ import os
 from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
-
 from django.http import FileResponse, Http404
-
 import PyPDF2
 import fitz
 
@@ -50,9 +48,7 @@ def upload_pdf(request):
             pdf_path = os.path.join(output_folder, pdf_file.name)
             # Iterate through each page
             images = convert_from_path(pdf_path)
-
             for i in range(len(images)):
-                # Save pages as images in the pdf
                 images[i].save('page' + str(i) + '.jpg', 'JPEG')
 
             return render(request, 'upload.html', {'uploadForm': form})

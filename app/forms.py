@@ -1,7 +1,7 @@
 from django import forms
 from app.models import Upload
 
-MAX_UPLOAD_SIZE = 2500000
+MAX_UPLOAD_SIZE = 25000000
 
 
 class UploadForm(forms.ModelForm):
