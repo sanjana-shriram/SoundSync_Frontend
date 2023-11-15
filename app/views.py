@@ -39,7 +39,6 @@ def upload_pdf(request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             pdf_file = form.cleaned_data['pdf']
-
             # Save the uploaded PDF file to a specific folder
             output_folder = os.path.join(os.path.dirname(
                 os.path.abspath(__file__)),  'outputs')
@@ -51,6 +50,24 @@ def upload_pdf(request):
             # Save PDF as images
             pdf_path = os.path.join(output_folder, pdf_file.name)
             print("pdf path!", pdf_path)
+
+            # MIDI File
+            midi_file = form.cleaned_data['midi']
+            # Save the uploaded PDF file to a specific folder
+            midi_output_folder = os.path.join(os.path.dirname(
+                os.path.abspath(__file__)),  'outputs')
+
+            with open(os.path.join(midi_output_folder, midi_file.name), 'wb+') as destination:
+                for chunk in midi_file.chunks():
+                    destination.write(chunk)
+
+            # Save PDF as images
+            midi_path = os.path.join(output_folder, midi_file.name)
+            print("MIDI path!", midi_path)
+
+            # Get the instrument
+            instrument = form.cleaned_data['instrument']
+            context['instrument'] = instrument
 
             # Iterate through each page
             images = convert_from_path(pdf_path)
@@ -83,9 +100,6 @@ def upload_pdf(request):
                 # images_list.append(image_file_name) # works
                 images_list.append('page')
 
-                print("testing out different paths \n")
-
-            print("IMAGES LIST YOI", images_list)
             context['images_list'] = images_list
             context['image'] = 'page'
             context['page_number'] = 1
