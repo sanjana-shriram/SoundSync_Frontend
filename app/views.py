@@ -10,6 +10,7 @@ from pdf2image import convert_from_path
 from django.http import FileResponse, Http404
 import PyPDF2
 import fitz
+from PIL import Image
 
 
 def home(request):
@@ -38,25 +39,71 @@ def upload_pdf(request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             pdf_file = form.cleaned_data['pdf']
+
             # Save the uploaded PDF file to a specific folder
             output_folder = os.path.join(os.path.dirname(
                 os.path.abspath(__file__)),  'outputs')
+
             with open(os.path.join(output_folder, pdf_file.name), 'wb+') as destination:
                 for chunk in pdf_file.chunks():
                     destination.write(chunk)
+
             # Save PDF as images
             pdf_path = os.path.join(output_folder, pdf_file.name)
             print("pdf path!", pdf_path)
+
             # Iterate through each page
             images = convert_from_path(pdf_path)
             images_list = []
 
-            for i in range(len(images)):
-                image_path = os.path.join(os.path.dirname(
-                    os.path.abspath(__file__)),  'outputs')
-                images[i].save(image_path + 'page' + str(i) + '.jpg',  'JPEG')
-                images_list.append(os.path.join(
-                    pdf_path, '../../../' + 'page' + str(i) + '.jpg'))
+            # Save the uploaded PDF file to a specific folder
+            image_output_folder = os.path.join(os.path.dirname(
+                os.path.abspath(__file__)),  'static')
+
+            # Iterate through each page
+            for i, image in enumerate(images):
+                # Create a unique file name for each page
+                image_file_name = f'page{i + 1}.jpg'
+
+                # Construct the full path for the image file
+                image_path = os.path.join(image_output_folder, image_file_name)
+
+                # Save the image
+                image.save(image_path)
+
+                # Optionally, if you need to perform other operations:
+                # Open the saved image using Pillow (PIL)
+                with Image.open(image_path) as img:
+                    # Perform operations if needed, e.g., resizing
+                    # img = img.resize((new_width, new_height))
+
+                    # Save the modified image
+                    img.save(image_path)
+
+                images_list.append(image_path)
+
+            # for i in range(len(images)):
+            #     image_file_name = 'page' + str(i) + '.jpg'
+            #     with open(image_path, 'wb+') as destination:
+            #         destination.write(images[i])
+
+            # # Optionally, if you need to resize the image or perform other operations:
+            #     with images[i].open(image_path) as img:
+            #         # Perform operations if needed, e.g., resizing
+            #         # img = img.resize((new_width, new_height))
+
+            #         # Save the modified image
+            #         img.save(image_path)
+
+            # for i in range(len(images)):
+            #     image_path = os.path.join(os.path.dirname(
+            #         os.path.abspath(__file__)),  'static')
+            #     images[i].save(image_path + 'page' + str(i) + '.jpg',  'JPEG')
+            #     images_list.append(os.path.join(
+            #         image_path, 'page' + str(i) + '.jpg'))
+
+                print("testing out different paths \n")
+
             print("IMAGES LIST YOI", images_list)
             return render(request, 'app/play.html', {'images_list': images_list})
     else:

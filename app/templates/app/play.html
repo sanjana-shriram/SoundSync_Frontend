@@ -7,25 +7,22 @@
   <title>{% block title %}Play{% endblock %}</title>
 </head>
 <body>
-  <div class="box">
-    <img
-      src="../../app/static/out0.jpg"
-      alt="page {{ forloop.counter }}"
-      width="400"
-      height="600"
-    />
-
-    <embed
-      src="{{ pdf_file.pdf_file.url }}"
-      type="application/pdf"
-      accept="application/pdf"
-      height="800px"
-      frameBorder="0"
-      scrolling="auto"
-      height="100%"
-      width="100%"
-    />
-  </div>
+  <img
+    src="../../static/out0.jpg"
+    alt="page {{ forloop.counter }}"
+    width="600"
+    height="800"
+  />
+  <embed
+    src="{{ pdf_file.pdf_file.url }}"
+    type="application/pdf"
+    accept="application/pdf"
+    height="800px"
+    frameBorder="0"
+    scrolling="auto"
+    height="100%"
+    width="100%"
+  />
 </body>
 
 {% endblock %}
