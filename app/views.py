@@ -87,7 +87,8 @@ def upload_pdf(request):
 
             print("IMAGES LIST YOI", images_list)
             context['images_list'] = images_list
-            context['page_number'] = 2
+            context['image'] = 'page'
+            context['page_number'] = 1
             return render(request, 'app/play.html', context)
     else:
         form = UploadForm()
