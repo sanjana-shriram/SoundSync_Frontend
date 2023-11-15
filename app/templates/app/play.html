@@ -8,8 +8,12 @@
 </head>
 <body>
   {% for image in images_list %}
+  <p>
+    image: {{image}} page number: {{page_number}} image name: {{image_name }}
+  </p>
+
   <img
-    src="{% static '/' %}{{ image }}"
+    src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
     alt="page {{ forloop.counter }}"
     width="600"
     height="800"

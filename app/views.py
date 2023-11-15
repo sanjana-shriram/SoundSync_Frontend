@@ -80,32 +80,15 @@ def upload_pdf(request):
                     # Save the modified image
                     img.save(image_path)
 
-                images_list.append(image_file_name)
-
-            # for i in range(len(images)):
-            #     image_file_name = 'page' + str(i) + '.jpg'
-            #     with open(image_path, 'wb+') as destination:
-            #         destination.write(images[i])
-
-            # # Optionally, if you need to resize the image or perform other operations:
-            #     with images[i].open(image_path) as img:
-            #         # Perform operations if needed, e.g., resizing
-            #         # img = img.resize((new_width, new_height))
-
-            #         # Save the modified image
-            #         img.save(image_path)
-
-            # for i in range(len(images)):
-            #     image_path = os.path.join(os.path.dirname(
-            #         os.path.abspath(__file__)),  'static')
-            #     images[i].save(image_path + 'page' + str(i) + '.jpg',  'JPEG')
-            #     images_list.append(os.path.join(
-            #         image_path, 'page' + str(i) + '.jpg'))
+                # images_list.append(image_file_name) # works
+                images_list.append('page')
 
                 print("testing out different paths \n")
 
             print("IMAGES LIST YOI", images_list)
-            return render(request, 'app/play.html', {'images_list': images_list})
+            context['images_list'] = images_list
+            context['page_number'] = 2
+            return render(request, 'app/play.html', context)
     else:
         form = UploadForm()
     return render(request, 'app/upload.html', {'uploadForm': form})

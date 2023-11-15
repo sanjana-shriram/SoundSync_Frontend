@@ -23,3 +23,13 @@ Install a Django environment:
 pip install django
 cd into /Scripts
 .\Activate.ps1
+
+Windows insttructions for poppler:
+If using Ubuntu/Debian:
+sudo apt-get update
+sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
+
+If using powerhsell:
+Install Chocolatey first: https://chocolatey.org/install
+In powershell, run as administrator and run:
+choco install poppler
