@@ -80,7 +80,7 @@ def upload_pdf(request):
                     # Save the modified image
                     img.save(image_path)
 
-                images_list.append(image_path)
+                images_list.append(image_file_name)
 
             # for i in range(len(images)):
             #     image_file_name = 'page' + str(i) + '.jpg'

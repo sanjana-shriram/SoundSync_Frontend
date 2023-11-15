@@ -7,12 +7,14 @@
   <title>{% block title %}Play{% endblock %}</title>
 </head>
 <body>
+  {% for image in images_list %}
   <img
-    src="../../static/out0.jpg"
+    src="{% static '/' %}{{ image }}"
     alt="page {{ forloop.counter }}"
     width="600"
     height="800"
   />
+  {% endfor %}
   <embed
     src="{{ pdf_file.pdf_file.url }}"
     type="application/pdf"
