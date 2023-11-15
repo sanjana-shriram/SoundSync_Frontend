@@ -12,6 +12,8 @@ class UploadForm(forms.ModelForm):
 
     def clean_instrument(self):
         instrument = str(self.cleaned_data['instrument'])
+        if not instrument:
+            raise forms.ValidationError('You must choose an instrument')
         return instrument
 
     def clean_pdf(self):
