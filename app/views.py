@@ -14,22 +14,22 @@ import fitz
 
 def home(request):
     context = {}
-    return render(request, 'consent.html', context)
+    return render(request, 'app/consent.html', context)
 
 
 def consent_action(request):
     context = {}
-    return render(request, 'consent.html', context)
+    return render(request, 'app/consent.html', context)
 
 
 def calibrate_action(request):
     context = {}
-    return render(request, 'calibrate.html', context)
+    return render(request, 'app/calibrate.html', context)
 
 
 def upload_action(request):
     context = {}
-    return render(request, 'upload.html', context)
+    return render(request, 'app/upload.html', context)
 
 
 def upload_pdf(request):
@@ -58,17 +58,18 @@ def upload_pdf(request):
                 images_list.append(os.path.join(
                     pdf_path, '../../../' + 'page' + str(i) + '.jpg'))
             print("IMAGES LIST YOI", images_list)
-            return render(request, 'play.html', {'images_list': images_list})
+            return render(request, 'app/play.html', {'images_list': images_list})
     else:
         form = UploadForm()
-    return render(request, 'upload.html', {'uploadForm': form})
+    return render(request, 'app/upload.html', {'uploadForm': form})
 
 
 def play_action(request):
     pdf_files = ['page0.jpg', 'page1.jpg']
     # for obj in Upload.objects.all():
     #     pdf_files.append(obj.pdf)
-    return render(request, 'play.html', {"pdf_files": pdf_files})
+    return render(request, 'app/play.html', {"pdf_files": pdf_files})
+
 
 # def choose_instrument(request):
 #     if request.method == 'POST':
@@ -115,7 +116,6 @@ def play_action(request):
 #             with open(os.path.join(output_folder, midi_file.name), 'wb+') as destination:
 #                 for chunk in midi_file.chunks():
 #                     destination.write(chunk)
-
 #             return render(request, 'upload.html', {'midiForm': form})
 #     else:
 #         form = MidiForm()

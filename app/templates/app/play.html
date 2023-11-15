@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %} {% load static %}
+{% extends "app/base.html" %} {% block content %} {% load static %}
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
@@ -8,15 +8,12 @@
 </head>
 <body>
   <div class="box">
-    <!-- code to find pdf file in outputs -->
-    <!-- {% for image in images_list %} -->
     <img
-      src="../../page0.jpg"
+      src="../../app/static/out0.jpg"
       alt="page {{ forloop.counter }}"
       width="400"
       height="600"
     />
-    <!-- {% endfor %} -->
 
     <embed
       src="{{ pdf_file.pdf_file.url }}"

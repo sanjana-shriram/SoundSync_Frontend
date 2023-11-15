@@ -23,7 +23,12 @@ class Upload(models.Model):
     #     max_length=50, choices=ORCHESTRA_INSTRUMENT_CHOICES)
     # content_type_instrument = models.CharField(max_length=200)
     content_type_pdf = models.CharField(max_length=200)
+
     # content_type_midi = models.CharField(max_length=200)
 
     def __str__(self):
         return 'id=' + str(self.id) + ',text="' + self.text + '"'
+
+# class Image(models.Model) {
+#     image = models.ImageField(upload_to = 'media/')
+# }
