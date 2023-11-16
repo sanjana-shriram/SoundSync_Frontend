@@ -12,13 +12,31 @@
   <script src="../../static/script.js" defer></script>
 </head>
 <body>
-  <div class="page">
+  <div class="page" style="display: flex">
+    <button
+      type="submit"
+      value="Turn page backward"
+      onclick="location.href='{% url 'backwardPageFlip' %}'"
+      name="mybtn3"
+    >
+      Turn Page Backward
+    </button>
+
     <img
       src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
       alt="page {{ forloop.counter }}"
       width="600"
       height="800"
     />
+
+    <button
+      type="submit"
+      value="Turn page forward"
+      onclick="location.href='{% url 'forwardPageFlip' %}'"
+      name="mybtn2"
+    >
+      Turn Page Forward
+    </button>
   </div>
 </body>
 

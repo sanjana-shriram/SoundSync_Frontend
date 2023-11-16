@@ -12,6 +12,13 @@ import PyPDF2
 import fitz
 from PIL import Image
 
+# Sexy Global Variables
+page_number = 1
+pdf_path = ""
+midi_path = ""
+instrument = ""
+images_list = []
+
 
 def home(request):
     context = {}
@@ -35,6 +42,11 @@ def upload_action(request):
 
 def upload_pdf(request):
     context = {}
+    global page_number
+    global pdf_path
+    global midi_path
+    global instrument
+    global images_list
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -49,7 +61,7 @@ def upload_pdf(request):
 
             # Save PDF as images
             pdf_path = os.path.join(output_folder, pdf_file.name)
-            print("pdf path!", pdf_path)
+            print("pdf path!", type(pdf_path))
 
             # MIDI File
             midi_file = form.cleaned_data['midi']
@@ -102,7 +114,8 @@ def upload_pdf(request):
 
             context['images_list'] = images_list
             context['image'] = 'page'
-            context['page_number'] = 1
+            page_number = 1
+            context['page_number'] = page_number
             return render(request, 'app/play.html', context)
     else:
         form = UploadForm()
@@ -114,6 +127,28 @@ def play_action(request):
     # for obj in Upload.objects.all():
     #     pdf_files.append(obj.pdf)
     return render(request, 'app/play.html', {"pdf_files": pdf_files})
+
+
+def flip_forward(request):
+    context = {}
+    global page_number
+    global images_list
+    page_number += 1
+    context['images_list'] = images_list
+    context['image'] = 'page'
+    context['page_number'] = page_number
+    return render(request, 'app/play.html', context)
+
+
+def flip_backward(request):
+    context = {}
+    global page_number
+    global images_list
+    page_number -= 1
+    context['images_list'] = images_list
+    context['image'] = 'page'
+    context['page_number'] = page_number
+    return render(request, 'app/play.html', context)
 
 
 # def choose_instrument(request):

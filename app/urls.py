@@ -10,6 +10,8 @@ urlpatterns = [
     path('upload', views.upload_action, name='upload'),
     path('play', views.play_action, name='play'),
     path('upload-pdf', views.upload_pdf, name='upload-pdf'),
+    path('forwardPageFlip', views.flip_forward, name='forwardPageFlip'),
+    path('backwardPageFlip', views.flip_backward, name='backwardPageFlip'),
 
     # path('upload-process', views.upload_process, name='upload-process'),
     # path('upload/<int:id>', views.get_uploads, name='get-upload'),
