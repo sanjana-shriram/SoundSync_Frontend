@@ -33,3 +33,18 @@ If using powerhsell:
 Install Chocolatey first: https://chocolatey.org/install
 In powershell, run as administrator and run:
 choco install poppler
+
+caleb's directions
+sudo apt update && sudo apt upgrade
+sudo apt install software-properties-common
+sudo app-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-cache policy python3.8 -> make sure you don't get errors
+sudo apt install python3.8 -> should already be installed
+
+in the root (sudo su)
+pip3 install virtualenv
+source venv/bin/activate
+
+sudo apt-get update
+sudo apt-get -y install poppler-utils
