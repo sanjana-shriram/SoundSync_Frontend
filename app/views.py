@@ -7,9 +7,9 @@ import os
 from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
-from django.http import FileResponse, Http404
-import PyPDF2
-import fitz
+# from django.http import FileResponse, Http404
+# import PyPDF2
+# import fitz
 from PIL import Image
 
 # Sexy Global Variables
@@ -134,6 +134,7 @@ def flip_forward(request):
     global page_number
     global images_list
     page_number += 1
+    print("YOI ", len(images_list))
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
@@ -145,6 +146,8 @@ def flip_backward(request):
     global page_number
     global images_list
     page_number -= 1
+    if page_number <= 0:
+        page_number = 1
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
