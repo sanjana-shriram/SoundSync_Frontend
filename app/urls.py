@@ -12,6 +12,8 @@ urlpatterns = [
     path('upload-pdf', views.upload_pdf, name='upload-pdf'),
     path('forwardPageFlip', views.flip_forward, name='forwardPageFlip'),
     path('backwardPageFlip', views.flip_backward, name='backwardPageFlip'),
+    path('backend', views.backend, name='backend'),
+
 
     # path('upload-process', views.upload_process, name='upload-process'),
     # path('upload/<int:id>', views.get_uploads, name='get-upload'),

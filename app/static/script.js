@@ -1,4 +1,4 @@
-gsap.from('.page', {duration: 1, x: '25%'} )
+gsap.from('.page', {duration: .2, x: '25%'} )
 
 
 
