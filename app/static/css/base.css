@@ -109,6 +109,39 @@ label {
     margin-left: 15px;
 }
 
+#rectangle{
+  position: absolute; /* Sit on top of the page content */
+  /* display: none; Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 82.8%;
+  left: 8%;
+  right: 0;
+  bottom: 0;
+  /* background-color: rgba(0,0,0,0.5); Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  /* cursor: pointer; Add a pointer on hover */
+  width:2px;
+  height:50px;
+  background:rgb(54, 16, 177);
+}
+
+/*
+measures and line measurements as %
+
+            measures
+line   8, 15.2, 22.78, 30.05
+14.7
+24.3
+34
+44
+53.5
+63.3
+73
+82.8
+
+*/
+
 /* .error {
     color:red;
 } */

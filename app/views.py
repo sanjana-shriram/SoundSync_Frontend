@@ -130,7 +130,7 @@ def flip_forward(request):
     global images_list
     page_number += 1
     print("YOI ", len(images_list))
-    context['images_list'] = images_list
+    # context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
     return render(request, 'app/play.html', context)
