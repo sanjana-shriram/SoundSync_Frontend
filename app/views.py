@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core import serializers
 import os
 from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
 from PIL import Image
+import numpy as np
+import json
+
 # backend imports
 # from pvrecorder import PvRecorder
 # import librosa
@@ -126,6 +130,7 @@ def play_action(request):
     pdf_files = ['page0.jpg', 'page1.jpg']
     # for obj in Upload.objects.all():
     #     pdf_files.append(obj.pdf)
+    runBackend()
     return render(request, 'app/play.html', {"pdf_files": pdf_files})
 
 
@@ -159,40 +164,79 @@ def flip_backward(request):
     context['page_number'] = page_number
     return render(request, 'app/play.html', context)
 
+########################################################################################
 # Audio Alignment Code Here
 # run when page shows on
-
 
 def getRefAudio(Fs):
     global midi_path
     # refAudio, Fs = librosa.load(midi_path, sr=Fs)
     # return refAudio, Fs
-    return 0
+    return
 
 
-def getLiveAudio(Fs):
-    # somehow get the snippet of live audio
-    return 0
+def getLiveAudio(recorder):
+    # access pv recorder object
+    numFrames = 20 #change to change length of recorded segment
+    allFrames = []
+    for i in range(numFrames):
+        frame = recorder.read()
+        allFrames.extend(frame)
+    npFrame = np.asarray(allFrames)
+    npFrame = np.divide(npFrame, 2**15) #idk why, but this is the conversion factor
+    return 
+
+def audioSetup():
+    device_index = 0
+    # recorder = PvRecorder(frame_length=1024, device_index=device_index)
+    return
 
 
-def alignAudio():
+def alignAudio(liveAudio):
     N = 2048
     H = 512  # decrease this number for more precision but longer computation
     Fs = 48100  # or maybe 22050
-    refAudio = getRefAudio(Fs)
+    # refAudio = getRefAudio(Fs)
     # refChroma = librosa.feature.chroma_stft(y=refAudio, sr=Fs, n_fft=N,
     # hop_length=H, norm=2.0)
-    liveAudio = getLiveAudio()
     # liveChroma = librosa.feature.chroma_stft(y=liveAudio, sr=Fs, n_fft=N,
     #  hop_length=H, norm=2.0)
     # C = cosine_distance(chroma_1, chroma_2)
     # _, _, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
     # wp_full = np.multiply(wp_full, (H/Fs))
-    # alignedAudio1 = wp_full[0, :].tolist()
-    # alignedAudio2 = wp_full[1, :].tolist()
+    # alignedRefAudio = wp_full[0, :].tolist()
+    # alignedLiveAudio = wp_full[1, :].tolist()
+    # return wp_full.T
+    return
 
-    return 0
+#rows are (alignedRefAudio, alignedLiveAudio) 
+def findStartTime(alignMatrix):
+    return
 
+def musicStarted():
+    return 
+
+# on backend, want to start right after files submitted
+# first begin listening and make a function for music being played vs not
+# do the chorma_stft for refAudio once at the beginning
+# continue aligning and use eye tracking data to help make better guess
+# change page_number appropriately
+# need head tracking function call somehow
+#  
+
+def runBackend():
+    recorder = audioSetup()
+    # recorder.start() #start recording
+    while True:
+        # frame = recorder.read()
+        # npFrame = np.divide(np.asarray(frame), 2**15)
+        # alignMatrix = alignAudio(liveAudio = npFrame)
+        # startTime = findStartTime(alignMatrix)
+        # pageNum, measureNum, beatNum = findMeasure(startTime)
+        # if measureNum == 
+        # update page to pageNum
+        pass
+    return 
 
 def backend(request):
     context = {}
@@ -200,7 +244,31 @@ def backend(request):
     global images_list
     page_number += 1
 
+    # print(os.path.dirname(os.path.abspath(__file__)))
+    # p = subprocess.Popen(args = [r"/mnt/d/CppDemo/CppDemo.cpp"], shell = True, 
+    #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
+
+    # audioSetup() 
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
     return render(request, 'app/play.html', context)
+
+######################################################################################
+
+def get_list_json_dumps_serializer(request):
+    imagejs_list = []
+    global images_list
+    global page_number
+    js_page_num = page_number
+    i = 1
+    for img in images_list:
+        my_img = {
+            'id': img.id,
+            'page_number': i, 
+        }
+        i+=1
+    
+    response_data = {'images':imagejs_list, 'page_number': js_page_num}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type = "applications/json")

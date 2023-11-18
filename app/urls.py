@@ -13,6 +13,7 @@ urlpatterns = [
     path('forwardPageFlip', views.flip_forward, name='forwardPageFlip'),
     path('backwardPageFlip', views.flip_backward, name='backwardPageFlip'),
     path('backend', views.backend, name='backend'),
+    path('get-global', views.get_list_json_dumps_serializer),
 
 
     # path('upload-process', views.upload_process, name='upload-process'),
