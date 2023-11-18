@@ -6,6 +6,11 @@ from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
 from PIL import Image
+# backend imports
+# from pvrecorder import PvRecorder
+# import librosa
+# from synctoolbox.dtw.cost import cosine_distance
+# from synctoolbox.dtw.core import compute_warping_path
 
 # Sexy Global Variables
 page_number = 1
@@ -78,7 +83,7 @@ def upload_pdf(request):
 
             # Iterate through each page
             images = convert_from_path(pdf_path)
-            images_list = []
+            # images_list = []
 
             # Save the uploaded PDF file to a specific folder
             image_output_folder = os.path.join(os.path.dirname(
@@ -104,9 +109,9 @@ def upload_pdf(request):
                     # Save the modified image
                     img.save(image_path)
 
-                # images_list.append(image_file_name) # works
+                # images_list.append(image_file_name)  # works
                 images_list.append('page')
-
+            print("images list in big function ", images_list)
             context['images_list'] = images_list
             context['image'] = 'page'
             page_number = 1
@@ -128,9 +133,15 @@ def flip_forward(request):
     context = {}
     global page_number
     global images_list
+    total_pages = len(images_list)
     page_number += 1
-    print("YOI ", len(images_list))
-    # context['images_list'] = images_list
+    print("BEFORE images length", total_pages, "page num", page_number)
+    # TODO: find total_pages and make it persistent
+    if page_number > 3:
+        page_number = 3
+    print("AFTER images length", total_pages, "page num", page_number)
+
+    context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
     return render(request, 'app/play.html', context)
@@ -152,13 +163,42 @@ def flip_backward(request):
 # run when page shows on
 
 
+def getRefAudio(Fs):
+    global midi_path
+    # refAudio, Fs = librosa.load(midi_path, sr=Fs)
+    # return refAudio, Fs
+    return 0
+
+
+def getLiveAudio(Fs):
+    # somehow get the snippet of live audio
+    return 0
+
+
+def alignAudio():
+    N = 2048
+    H = 512  # decrease this number for more precision but longer computation
+    Fs = 48100  # or maybe 22050
+    refAudio = getRefAudio(Fs)
+    # refChroma = librosa.feature.chroma_stft(y=refAudio, sr=Fs, n_fft=N,
+    # hop_length=H, norm=2.0)
+    liveAudio = getLiveAudio()
+    # liveChroma = librosa.feature.chroma_stft(y=liveAudio, sr=Fs, n_fft=N,
+    #  hop_length=H, norm=2.0)
+    # C = cosine_distance(chroma_1, chroma_2)
+    # _, _, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
+    # wp_full = np.multiply(wp_full, (H/Fs))
+    # alignedAudio1 = wp_full[0, :].tolist()
+    # alignedAudio2 = wp_full[1, :].tolist()
+
+    return 0
+
+
 def backend(request):
     context = {}
     global page_number
     global images_list
     page_number += 1
-
-    # audio_1, _ = librosa.load(midi_path, sr=Fs)
 
     context['images_list'] = images_list
     context['image'] = 'page'

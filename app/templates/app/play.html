@@ -12,7 +12,24 @@
   <script src="../../static/script.js" defer></script>
 </head>
 <body>
-  <div class="page" style="display: flex">
+  <div
+    class="cursor"
+    style="
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 41.4%;
+      left: 16.15%;
+      right: 0;
+      bottom: 0;
+      z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+      width: 3px;
+      height: 50px;
+      background: rgb(255, 77, 122);
+    "
+  ></div>
+
+  <div class="pages" style="display: flex">
     <button
       type="submit"
       value="Turn page backward"
@@ -22,9 +39,9 @@
     >
       Turn Page Backward
     </button>
-    <div id="rectangle"></div>
 
     <img
+      class="page"
       src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
       alt="page {{ forloop.counter }}"
       width="600"

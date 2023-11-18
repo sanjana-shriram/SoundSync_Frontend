@@ -48,3 +48,19 @@ source venv/bin/activate
 
 sudo apt-get update
 sudo apt-get -y install poppler-utils
+
+Caleb's Setup (took us 6 hours :^)
+copy token
+sudo su into root from SoundSync git
+in root,
+source venv/bin/activate
+cd SoundSync+Frontend
+git reset --hard (to remove all changes)
+git pull
+run the following from the root to view webpage, ctrl + C to kill program
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py runserver
+importing PILLOW:
+pip uninstall pillow
+pip reinstall pdf2image
