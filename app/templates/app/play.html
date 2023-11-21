@@ -14,12 +14,11 @@
 <body>
   <div
     class="cursor"
+    id="cursor"
     style="
       position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 41.4%;
-      left: 16.15%;
+      top: 36.4%;
+      left: 32.5%;
       right: 0;
       bottom: 0;
       z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
@@ -28,6 +27,33 @@
       background: rgb(255, 77, 122);
     "
   ></div>
+
+  <div id="user-hello"></div>
+
+  {{ room_name|json_script:"room-name"}}
+  <script>
+    const roomName = JSON.parse(
+      document.getElementById("room-name").textContent
+    );
+    const chatSocket = new WebSocket(
+      "ws://" + window.location.host + "/ws/app/" + roomName + "/"
+    );
+
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      console.log(data);
+      document.querySelector("#user-hello").innerHTML = data.tester;
+      // updateCursor(data.measure_num);
+    };
+
+    // function updateCursor(measureNum) {
+    //   // Update the cursor position based on the measure_num
+    //   const cursor = document.getElementById("cursor");
+    //   // Assuming each measure is represented by 10 pixels for demonstration purposes
+    //   const newPosition = measureNum * 10;
+    //   cursor.style.left = newPosition + "px";
+    // }
+  </script>
 
   <div class="pages" style="display: flex">
     <button
@@ -49,6 +75,7 @@
     />
 
     <button
+      id="forward"
       type="submit"
       value="Turn page forward"
       onclick="location.href='{% url 'forwardPageFlip' %}'"

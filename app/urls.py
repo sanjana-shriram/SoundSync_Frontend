@@ -2,6 +2,7 @@ from django.urls import path
 # from . import views
 from app import views
 
+
 urlpatterns = [
     # path("", views.index, name="index"),
     path('', views.consent_action, name='home'),
@@ -14,7 +15,7 @@ urlpatterns = [
     path('backwardPageFlip', views.flip_backward, name='backwardPageFlip'),
     path('backend', views.backend, name='backend'),
     path('get-global', views.get_list_json_dumps_serializer),
-
+    path('<str:room_name>/', views.room, name='room'),
 
     # path('upload-process', views.upload_process, name='upload-process'),
     # path('upload/<int:id>', views.get_uploads, name='get-upload'),
