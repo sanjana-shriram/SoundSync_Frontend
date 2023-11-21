@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
 import os
+import time
 from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
@@ -10,9 +11,12 @@ from PIL import Image
 import numpy as np
 import json
 
-# backend imports
+# # backend imports
 # from pvrecorder import PvRecorder
 # import librosa
+# import concurrent.futures
+# import subprocess
+# from libfmp.b.b_plot import plot_signal, plot_chromagram
 # from synctoolbox.dtw.cost import cosine_distance
 # from synctoolbox.dtw.core import compute_warping_path
 
@@ -130,7 +134,6 @@ def play_action(request):
     pdf_files = ['page0.jpg', 'page1.jpg']
     # for obj in Upload.objects.all():
     #     pdf_files.append(obj.pdf)
-    runBackend()
     return render(request, 'app/play.html', {"pdf_files": pdf_files})
 
 
@@ -168,75 +171,194 @@ def flip_backward(request):
 # Audio Alignment Code Here
 # run when page shows on
 
-def getRefAudio(Fs):
-    global midi_path
-    # refAudio, Fs = librosa.load(midi_path, sr=Fs)
-    # return refAudio, Fs
-    return
+########################################################################################
+# Helper Functions
+
+# def trim_chroma_matrix(chroma_matrix, amplitude_threshold=0.75, min_duration=400):
+#     """
+#     Trim a chroma matrix by removing the initial portion where there is no solid harmonic component.
+
+#     Parameters:
+#     - chroma_matrix (numpy.ndarray): Chroma matrix where each column represents a chroma vector.
+#     - amplitude_threshold (float): Minimum amplitude threshold for considering a chroma vector.
+#     - min_duration (int): Minimum consecutive duration of chroma vectors with sufficient amplitude.
+
+#     Returns:
+#     - numpy.ndarray: Trimmed chroma matrix.
+#     """
+#     # Find the maximum value and its index in each chroma vector
+#     vector_max_values = np.max(chroma_matrix, axis=0)
+#     vector_max_indices = np.argmax(chroma_matrix, axis=0)
+
+#     # Find the first index where the maximum value exceeds the threshold for a consecutive duration
+#     start_index = 0
+#     while start_index < len(vector_max_values) and vector_max_values[start_index] <= amplitude_threshold:
+#         start_index += 1
+
+#     # Find the end index based on the minimum consecutive duration
+#     end_index = start_index
+#     consecutive_duration = 0
+#     while end_index < len(vector_max_values) and consecutive_duration < min_duration:
+#         if vector_max_values[end_index] > amplitude_threshold and vector_max_indices[end_index] == vector_max_indices[start_index]:
+#             consecutive_duration += 1
+#         else:
+#             consecutive_duration = 0
+#         end_index += 1
+
+#     # Extract the valid chroma vectors
+#     trimmed_chroma_matrix = chroma_matrix[:, start_index:end_index]
+#     print(start_index, end_index)
+    
+#     return trimmed_chroma_matrix
+
+# def highest_average_in_window(vector, window_size):
+#     """
+#     Find the highest average within a moving window of a given size for a vector.
+
+#     Parameters:
+#     - vector (list or numpy.ndarray): Input vector.
+#     - window_size (int): Size of the moving window.
+
+#     Returns:
+#     - float: Highest average within the moving window.
+#     - int: Starting index of the window with the highest average.
+#     """
+#     if len(vector) < window_size or window_size <= 0:
+#         raise ValueError("Invalid window size or vector length.")
+
+#     max_average = float('-inf')
+#     max_average_index = 0
+
+#     for i in range(len(vector) - window_size + 1):
+#         window_sum = sum(vector[i:i+window_size])
+#         window_average = window_sum / window_size
+        
+#         if window_average > max_average:
+#             max_average = window_average
+#             max_average_index = i
+
+#     return max_average, max_average_index
+
+# def threshold_and_zero(array, threshold):
+#     """
+#     Set every element in a NumPy array greater than a threshold to zero.
+
+#     Parameters:
+#     - array (numpy.ndarray): Input NumPy array.
+#     - threshold (float): Threshold value.
+
+#     Returns:
+#     - numpy.ndarray: Modified array.
+#     """
+#     return np.where(array > threshold, 0, array)
+# #####################################################################################
+
+# def compute_chroma(audio, sr, N, H):
+#     return librosa.feature.chroma_stft(y=audio, sr=sr, n_fft=N, hop_length=H, norm=2.0)
+
+# # NOTE: need to add entire folder into this github repo
+# def getEyeData():
+#     p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, 
+#                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE) 
+#     stdout, stderr = p.communicate()
+#     return stdout.decode('utf-8')
+
+# def getAudioData(recorder):
+#     recorder.start()
+#     startTime = time.time()
+#     liveAudio = None
+#     #NOTE: to change length of audio segemtn
+#     audioSegLength = 0.25
+#     while time.time() - startTime < audioSegLength:
+#         frame = recorder.read()
+#         npFrame = np.asarray(frame)
+#         npFrame = np.divide(npFrame, 2**15)
+#         if type(liveAudio) == type(None):
+#             liveAudio = npFrame
+#         else: 
+#             liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
+#     return liveAudio
 
 
-def getLiveAudio(recorder):
-    # access pv recorder object
-    numFrames = 20 #change to change length of recorded segment
-    allFrames = []
-    for i in range(numFrames):
-        frame = recorder.read()
-        allFrames.extend(frame)
-    npFrame = np.asarray(allFrames)
-    npFrame = np.divide(npFrame, 2**15) #idk why, but this is the conversion factor
-    return 
+# def alignAudio(refAudio, liveAudio):
+#     Fs_ref = 48100 #22050
+#     Fs_live = 16000
+#     N = 1024
+#     H = 512
+#     feature_rate = int(48100 / H)
+    
+#     #make into chromas
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         # Submit the function calls to the thread pool
+#         print(Fs_live)
+#         future_chroma_1 = executor.submit(compute_chroma, refAudio, Fs_ref, N, H)
+#         future_chroma_2 = executor.submit(compute_chroma, liveAudio, Fs_ref, N, H)
 
-def audioSetup():
-    device_index = 0
-    # recorder = PvRecorder(frame_length=1024, device_index=device_index)
-    return
+#         # Get the results when they are ready
+#         refChroma = future_chroma_1.result()
+#         liveChroma = future_chroma_2.result()
+    
+#     plot_chromagram(refChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
+#     # plt.show()
+#     plot_chromagram(liveChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
+#     # plt.show()
+
+#     C = cosine_distance(refChroma, liveChroma)
+#     D, E, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
+#     coordinates = np.column_stack((wp_full[0, :], wp_full[1, :]))
+#     dx, dy = np.gradient(coordinates[:, 0]), np.gradient(coordinates[:, 1])
+#     maxAvg, startPoint = highest_average_in_window(threshold_and_zero(dy, 1), liveChroma.shape[1])
+
+#     print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}")
+#     return
 
 
-def alignAudio(liveAudio):
-    N = 2048
-    H = 512  # decrease this number for more precision but longer computation
-    Fs = 48100  # or maybe 22050
-    # refAudio = getRefAudio(Fs)
-    # refChroma = librosa.feature.chroma_stft(y=refAudio, sr=Fs, n_fft=N,
-    # hop_length=H, norm=2.0)
-    # liveChroma = librosa.feature.chroma_stft(y=liveAudio, sr=Fs, n_fft=N,
-    #  hop_length=H, norm=2.0)
-    # C = cosine_distance(chroma_1, chroma_2)
-    # _, _, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
-    # wp_full = np.multiply(wp_full, (H/Fs))
-    # alignedRefAudio = wp_full[0, :].tolist()
-    # alignedLiveAudio = wp_full[1, :].tolist()
-    # return wp_full.T
-    return
+# # on backend, want to start right after files submitted
+# # first begin listening and make a function for music being played vs not
+# # do the chorma_stft for refAudio once at the beginning
+# # continue aligning and use eye tracking data to help make better guess
+# # change page_number appropriately
+# # need head tracking function call somehow
+ 
 
-#rows are (alignedRefAudio, alignedLiveAudio) 
-def findStartTime(alignMatrix):
-    return
+# def runBackend():
+#     #establish pvrecorder 
+#     recorder = PvRecorder(frame_length=1024, device_index=0)
+#     print("pvrecorder version: %s" % recorder.version)
+#     #get ref Audio
+#     # global midi_path
+#     midi_path = "" #NOTE: delete this and uncomment prev line
+#     refAudio, _ = librosa.load(midi_path, sr = 48100)
 
-def musicStarted():
-    return 
+#     #get first sample
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         eyeDataThread = executor.submit(getEyeData)
+#         audioDataThread = executor.submit(getAudioData, recorder)
 
-# on backend, want to start right after files submitted
-# first begin listening and make a function for music being played vs not
-# do the chorma_stft for refAudio once at the beginning
-# continue aligning and use eye tracking data to help make better guess
-# change page_number appropriately
-# need head tracking function call somehow
-#  
+#         eyeData = eyeDataThread.result()
+#         prevLiveAudio = audioDataThread.result()
 
-def runBackend():
-    recorder = audioSetup()
-    # recorder.start() #start recording
-    while True:
-        # frame = recorder.read()
-        # npFrame = np.divide(np.asarray(frame), 2**15)
-        # alignMatrix = alignAudio(liveAudio = npFrame)
-        # startTime = findStartTime(alignMatrix)
-        # pageNum, measureNum, beatNum = findMeasure(startTime)
-        # if measureNum == 
-        # update page to pageNum
-        pass
-    return 
+#     # now run this on a loop
+#     while True:
+#         with concurrent.futures.ThreadPoolExecutor() as executor:
+        
+#             # Submit the function calls to the thread pool
+#             eyeDataThread = executor.submit(getEyeData)
+#             audioDataThread = executor.submit(getAudioData, recorder)
+#             alignAudioThread = executor.submit(alignAudio, refAudio, prevLiveAudio)
+
+
+#             # Get the results when they are ready
+#             eyeData = eyeDataThread.result()
+#             audioData = audioDataThread.result()
+#             alignedAudio = alignAudioThread.result()
+        
+#         #NOTE: do something with the alignedAudio data
+#         # do something here
+#         # update measure num etc
+
+#         prevLiveAudio = audioData
+
 
 def backend(request):
     context = {}
