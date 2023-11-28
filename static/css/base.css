@@ -1,0 +1,182 @@
+/* Color Theme*/
+/* darkest
+#5672b2
+#6383cc
+#87a3e7
+#b7c7ed
+#f0f0f0 (grey)
+lightest */ 
+
+
+/* Base.HTML */
+.header {
+    color: #5672b2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    width: 600px;
+    font-family: sans-serif;
+}
+
+.big-heading {
+    font-size: xx-large;
+    font-weight: bold;
+    padding: 10px 10px;
+}
+
+div {
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.navbar {
+    align-items: right;
+    margin-right: 30px;
+    margin-left: 30px;
+    float: right;
+  }
+  
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+    font-family: sans-serif;
+}
+
+
+/* consent.HTML */
+label {
+    text-align: right;
+    clear: both;
+    float: left;
+    /* margin-right: 15px; */
+  }
+
+  h2 {
+    color: #5672b2;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  h4 {
+    color: rgb(45, 51, 65);
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  li {
+    margin: 10px 10px 10px 10px;
+  }
+
+  .button {
+    display: inline-block;
+    background-color: #87a3e7; /* Set your desired button color */
+    color: white;
+    padding: 5px 10px; /*Adjust padding to fit your text */
+    border-radius: 25px; /* Rounds the button corners, adjust the value for a more/less rounded button */
+    text-decoration: none; /* Remove underline from the link */
+    /* font-family: Arial, sans-serif; Set your desired font family */
+    font-size: 16px; /* Set your desired font size */
+    border: 2px solid #5672b2; /* Border color, same as background color for consistency */
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+  }
+
+  .button:hover {
+    background-color: #87a3e7;
+    border-color: #5672b2;
+  }
+
+  .button:active {
+    background-color:#6383cc; /* Change the color when the button is clicked */
+    border-color: #5672b2; /* Change border color when the button is clicked */
+  }
+  
+.box {
+    height: 820px;
+    width: 594px;
+    border: 3px solid #9cb1dc;
+    overflow: auto;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+
+/*
+page 1
+PAGE LAYOUT coordinates
+            measures
+line   10, 16.15, 23.5, 30.55
+25.4
+33.4
+41.4
+49.1
+57
+65
+73
+80.7
+
+*/
+
+/* .error {
+    color:red;
+} */
+/* 
+.list {
+    padding: 3px;
+}
+
+.list-link {
+    padding: 5px;
+}
+
+.list-link:hover {
+     background-color:lightgray;
+}
+
+th {
+    font-weight: normal;
+    text-align: left;
+}
+
+a {
+     text-decoration: none;
+     color:black;
+}
+
+button {
+    font-size: x-large;
+    padding: 3px;
+} */
+/* 
+input {
+    font-size: x-large;
+} */
+
+/* div, form {
+    padding: 4px;
+} */
+
+/* 
+.navlink {
+    background-color: lightgray;
+}
+
+.letter {
+    padding: 3px;
+    font-family: sans-serif;
+    font-size: x-large;
+
+}
+
+.letter:hover {
+     background-color:lightgray;
+} */

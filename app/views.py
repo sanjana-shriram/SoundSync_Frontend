@@ -208,7 +208,7 @@ def flip_backward(request):
 #     # Extract the valid chroma vectors
 #     trimmed_chroma_matrix = chroma_matrix[:, start_index:end_index]
 #     print(start_index, end_index)
-    
+
 #     return trimmed_chroma_matrix
 
 # def highest_average_in_window(vector, window_size):
@@ -232,7 +232,7 @@ def flip_backward(request):
 #     for i in range(len(vector) - window_size + 1):
 #         window_sum = sum(vector[i:i+window_size])
 #         window_average = window_sum / window_size
-        
+
 #         if window_average > max_average:
 #             max_average = window_average
 #             max_average_index = i
@@ -258,8 +258,8 @@ def flip_backward(request):
 
 # # NOTE: need to add entire folder into this github repo
 # def getEyeData():
-#     p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, 
-#                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE) 
+#     p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True,
+#                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE)
 #     stdout, stderr = p.communicate()
 #     return stdout.decode('utf-8')
 
@@ -275,7 +275,7 @@ def flip_backward(request):
 #         npFrame = np.divide(npFrame, 2**15)
 #         if type(liveAudio) == type(None):
 #             liveAudio = npFrame
-#         else: 
+#         else:
 #             liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
 #     return liveAudio
 
@@ -286,7 +286,7 @@ def flip_backward(request):
 #     N = 1024
 #     H = 512
 #     feature_rate = int(48100 / H)
-    
+
 #     #make into chromas
 #     with concurrent.futures.ThreadPoolExecutor() as executor:
 #         # Submit the function calls to the thread pool
@@ -297,7 +297,7 @@ def flip_backward(request):
 #         # Get the results when they are ready
 #         refChroma = future_chroma_1.result()
 #         liveChroma = future_chroma_2.result()
-    
+
 #     plot_chromagram(refChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
 #     # plt.show()
 #     plot_chromagram(liveChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
@@ -319,10 +319,10 @@ def flip_backward(request):
 # # continue aligning and use eye tracking data to help make better guess
 # # change page_number appropriately
 # # need head tracking function call somehow
- 
+
 
 # def runBackend():
-#     #establish pvrecorder 
+#     #establish pvrecorder
 #     recorder = PvRecorder(frame_length=1024, device_index=0)
 #     print("pvrecorder version: %s" % recorder.version)
 #     #get ref Audio
@@ -341,7 +341,7 @@ def flip_backward(request):
 #     # now run this on a loop
 #     while True:
 #         with concurrent.futures.ThreadPoolExecutor() as executor:
-        
+
 #             # Submit the function calls to the thread pool
 #             eyeDataThread = executor.submit(getEyeData)
 #             audioDataThread = executor.submit(getAudioData, recorder)
@@ -352,7 +352,7 @@ def flip_backward(request):
 #             eyeData = eyeDataThread.result()
 #             audioData = audioDataThread.result()
 #             alignedAudio = alignAudioThread.result()
-        
+
 #         #NOTE: do something with the alignedAudio data
 #         # do something here
 #         # update measure num etc
@@ -367,16 +367,17 @@ def backend(request):
     page_number += 1
 
     # print(os.path.dirname(os.path.abspath(__file__)))
-    # p = subprocess.Popen(args = [r"/mnt/d/CppDemo/CppDemo.cpp"], shell = True, 
+    # p = subprocess.Popen(args = [r"/mnt/d/CppDemo/CppDemo.cpp"], shell = True,
     #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
 
-    # audioSetup() 
+    # audioSetup()
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
     return render(request, 'app/play.html', context)
 
 ######################################################################################
+
 
 def get_list_json_dumps_serializer(request):
     imagejs_list = []
@@ -387,10 +388,10 @@ def get_list_json_dumps_serializer(request):
     for img in images_list:
         my_img = {
             'id': img.id,
-            'page_number': i, 
+            'page_number': i,
         }
-        i+=1
-    
-    response_data = {'images':imagejs_list, 'page_number': js_page_num}
+        i += 1
+
+    response_data = {'images': imagejs_list, 'page_number': js_page_num}
     response_json = json.dumps(response_data)
-    return HttpResponse(response_json, content_type = "applications/json")
+    return HttpResponse(response_json, content_type="applications/json")
