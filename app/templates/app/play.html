@@ -18,7 +18,7 @@
     id="cursor"
     style="
       position: absolute;
-      top: 36.4%;
+      top: 66.4%;
       left: 32.5%;
       right: 0;
       bottom: 0;
@@ -76,10 +76,19 @@
 
   <h4>Dynamic Update</h4>
 
-  <div id="variable-container"></div>
+  <div id="variable-container">  here here</div>
 
   <script type="text/javascript">
       // Function to fetch and update the variable
+      // Adjust to your screen, Sanjana's settings
+      const screen_width = 505;
+      const line_height = 78;
+      const first_col_offset = 150;
+      const first_row_offset = 250;
+      const bar_width = 125;
+      var bar = 0;
+      var row = 0;
+      
       function updateVariable() {
           // Use jQuery to make an AJAX request
           $.ajax({
@@ -88,14 +97,24 @@
               success: function(data) {
                   // Update the content of the #variable-container div
                   $('#variable-container').text(data.my_variable);
+                  
+                  // Update the left position of the cursor based on the received variable
+                  var cursor = document.getElementById('cursor');
+                  var value = parseFloat(data.my_variable) + first_col_offset; // Adjust the offset as needed
+                  row = parseFloat(data.row)
+                  bar = parseFloat(data.bar)
+                  
+                  // math 
+                  cursor.style.left = ((bar * bar_width)%screen_width) + first_col_offset + 'px';
+                  cursor.style.top = (row * line_height) + first_row_offset + 'px';
+
+                  
               }
           });
       }
-
       // Call the updateVariable function every 200 milliseconds
-      setInterval(updateVariable, 50);
+      setInterval(updateVariable, 20);
   </script>
-
 </body>
 
 {% endblock %}

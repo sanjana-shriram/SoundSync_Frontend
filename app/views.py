@@ -403,10 +403,21 @@ def get_list_json_dumps_serializer(request):
 
 
 my_variable = 0
+bar = 0
+row = 0
+
+
 def get_variable(request):
     # Compute or get your variable here
     global my_variable
+    global bar
+    global row
     my_variable += 1
+    # As long as these variables are updated in a timely manner, this will update the cursor on the page!
+    row = 4
+    bar = 0
 
     # Return the variable as JSON
-    return JsonResponse({'my_variable': my_variable})
+    return JsonResponse({'my_variable': my_variable, 
+                         'row': row,
+                         'bar': bar})
