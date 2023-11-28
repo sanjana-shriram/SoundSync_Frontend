@@ -3,20 +3,16 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core import serializers
 import os
-import time
 from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
 from PIL import Image
-import numpy as np
+# import numpy as np
 import json
 
-# # backend imports
+# backend imports
 # from pvrecorder import PvRecorder
 # import librosa
-# import concurrent.futures
-# import subprocess
-# from libfmp.b.b_plot import plot_signal, plot_chromagram
 # from synctoolbox.dtw.cost import cosine_distance
 # from synctoolbox.dtw.core import compute_warping_path
 
@@ -91,7 +87,7 @@ def upload_pdf(request):
 
             # Iterate through each page
             images = convert_from_path(pdf_path)
-            # images_list = []
+            images_list = []
 
             # Save the uploaded PDF file to a specific folder
             image_output_folder = os.path.join(os.path.dirname(
@@ -131,10 +127,17 @@ def upload_pdf(request):
 
 
 def play_action(request):
-    pdf_files = ['page0.jpg', 'page1.jpg']
-    # for obj in Upload.objects.all():
-    #     pdf_files.append(obj.pdf)
-    return render(request, 'app/play.html', {"pdf_files": pdf_files})
+    global page_number
+    global pdf_path
+    global midi_path
+    global images_list
+    context = {}
+    context['images_list'] = images_list
+    context['image'] = 'page'
+    page_number = 1
+    context['page_number'] = page_number
+    runBackend()
+    return render(request, 'app/play.html', context)
 
 
 def flip_forward(request):
@@ -395,3 +398,14 @@ def get_list_json_dumps_serializer(request):
     response_data = {'images': imagejs_list, 'page_number': js_page_num}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="applications/json")
+
+
+def fake_backend(request):
+    # update every 500 ms
+    measure = random.randrange(0, 32)
+
+
+def room(request, room_name):
+    context = {}
+    context['room_name'] = room_name
+    return render(request, 'app/play.html', context)
