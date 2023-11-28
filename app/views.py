@@ -9,6 +9,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 # import numpy as np
 import json
+from django.http import JsonResponse
 
 # backend imports
 # from pvrecorder import PvRecorder
@@ -136,7 +137,7 @@ def play_action(request):
     context['image'] = 'page'
     page_number = 1
     context['page_number'] = page_number
-    runBackend()
+    #runBackend()
     return render(request, 'app/play.html', context)
 
 
@@ -400,12 +401,12 @@ def get_list_json_dumps_serializer(request):
     return HttpResponse(response_json, content_type="applications/json")
 
 
-def fake_backend(request):
-    # update every 500 ms
-    measure = random.randrange(0, 32)
 
+my_variable = 0
+def get_variable(request):
+    # Compute or get your variable here
+    global my_variable
+    my_variable += 1
 
-def room(request, room_name):
-    context = {}
-    context['room_name'] = room_name
-    return render(request, 'app/play.html', context)
+    # Return the variable as JSON
+    return JsonResponse({'my_variable': my_variable})

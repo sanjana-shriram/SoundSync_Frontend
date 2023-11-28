@@ -10,6 +10,7 @@
     defer
   ></script>
   <script src="../../static/script.js" defer></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
   <div
@@ -31,29 +32,7 @@
   <div id="user-hello"></div>
 
   {{ room_name|json_script:"room-name"}}
-  <script>
-    const roomName = JSON.parse(
-      document.getElementById("room-name").textContent
-    );
-    const chatSocket = new WebSocket(
-      "ws://" + window.location.host + "/ws/app/" + roomName + "/"
-    );
-
-    chatSocket.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      console.log(data);
-      document.querySelector("#user-hello").innerHTML = data.tester;
-      // updateCursor(data.measure_num);
-    };
-
-    // function updateCursor(measureNum) {
-    //   // Update the cursor position based on the measure_num
-    //   const cursor = document.getElementById("cursor");
-    //   // Assuming each measure is represented by 10 pixels for demonstration purposes
-    //   const newPosition = measureNum * 10;
-    //   cursor.style.left = newPosition + "px";
-    // }
-  </script>
+ 
 
   <div class="pages" style="display: flex">
     <button
@@ -94,6 +73,29 @@
   >
     Trigger Backend
   </button>
+
+  <h4>Dynamic Update</h4>
+
+  <div id="variable-container"></div>
+
+  <script type="text/javascript">
+      // Function to fetch and update the variable
+      function updateVariable() {
+          // Use jQuery to make an AJAX request
+          $.ajax({
+              url: 'get-var',
+              method: 'GET',
+              success: function(data) {
+                  // Update the content of the #variable-container div
+                  $('#variable-container').text(data.my_variable);
+              }
+          });
+      }
+
+      // Call the updateVariable function every 200 milliseconds
+      setInterval(updateVariable, 50);
+  </script>
+
 </body>
 
 {% endblock %}
