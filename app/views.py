@@ -422,7 +422,7 @@ def get_variable(request):
     global page_number
     # global turnPage 
 
-    page_number = 3
+    page_number = 1
 
     my_variable += 1
     # As long as these variables are updated in a timely manner, this will update the cursor on the page!

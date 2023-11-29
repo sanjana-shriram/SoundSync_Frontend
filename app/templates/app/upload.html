@@ -8,6 +8,7 @@
   <title>{% block title %}Upload{% endblock %}</title>
 </head>
 
+
 <body>
   <div class="box">
     <h2>File Upload and Instrument Selection</h2>
@@ -37,11 +38,13 @@
         </tr>
         {% endfor %}
         <tr>
-          <td colspan="3"><input type="submit" value="Submit" /></td>
+          <td colspan="3"><input id="submit-button" type="submit" value="Submit" /></td>
         </tr>
       </table>
       {% csrf_token %}
     </form>
+
+    
 
     <div>
       <a class="button" href="{% url 'play' %}">Next Page</a>
