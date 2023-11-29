@@ -29,8 +29,6 @@
     "
   ></div>
 
-
-
   <div class="pages" style="display: flex">
     <button
       type="submit"
@@ -43,14 +41,13 @@
     </button>
 
     <img
-        id="pageDisplayed"
-        class="page"
-        src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
-        alt="page {{ forloop.counter }}"
-        width="600"
-        height="800"
+      id="pageDisplayed"
+      class="page"
+      src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
+      alt="page {{ forloop.counter }}"
+      width="600"
+      height="800"
     />
-    
 
     <button
       id="forward"
@@ -75,53 +72,68 @@
 
   <h4>Dynamic Update</h4>
 
-  <div id="variable-container">  here here</div>
+  <div id="variable-container">here here</div>
 
   <script type="text/javascript">
-      // Function to fetch and update the variable
-      // Adjust to your screen, Sanjana's settings
-      const screen_width = 505;
-      const line_height = 78;
-      const first_col_offset = 150;
-      const first_row_offset = 250;
-      const bar_width = 125;
-      var bar = 0;
-      var row = 0;
-      
-      function updateVariable() {
-          // Use jQuery to make an AJAX request
-          $.ajax({
-              url: 'get-var',
-              method: 'GET',
-              success: function(data) {
-                  // Update the content of the #variable-container div
-                  $('#variable-container').text(data.my_variable);
-                  
-                  // Update the left position of the cursor based on the received variable
-                  var cursor = document.getElementById('cursor');
-                  var value = parseFloat(data.my_variable) + first_col_offset; // Adjust the offset as needed
-                  row = parseFloat(data.row)
-                  bar = parseFloat(data.bar)
-                  
-                  // math 
-                  cursor.style.left = ((bar * bar_width)%screen_width) + first_col_offset + 'px';
-                  cursor.style.top = (row * line_height) + first_row_offset + 'px';
+    // Function to fetch and update the variable
+    // Adjust to your screen, Sanjana's settings
+    // First Page Only
+    const line_height_1 = 78;
+    const first_col_offset_1 = 150;
+    const first_row_offset_1 = 250;
+    const screen_width = 505;
+    const bar_width = 125;
+    var bar = 0;
+    var row = 0;
+    // All other pages
+    const line_height = 86.5;
+    const first_col_offset = 150;
+    const first_row_offset = 190;
 
-                  // update page
-                  
-                  var pageNumber = data.page_number 
-                  
-                  
-                  var imageElement = document.getElementById('pageDisplayed');
-                  console.log(data.page_number)
-                  console.log("BEFORE capybara", imageElement.src);
-                  imageElement.src = "{% static '/' %}{{ image }}" + pageNumber + ".jpg";
-                  console.log("capybara- After", imageElement.src);
-              }
-          });
-      }
-      // Call the updateVariable function every 200 milliseconds
-      setInterval(updateVariable, 20);
+    function updateVariable() {
+      // Use jQuery to make an AJAX request
+      $.ajax({
+        url: "get-var",
+        method: "GET",
+        success: function (data) {
+          // Update the content of the #variable-container div
+          $("#variable-container").text(data.my_variable);
+
+          // Update the left position of the cursor based on the received variable
+          var cursor = document.getElementById("cursor");
+          var value = parseFloat(data.my_variable) + first_col_offset; // Adjust the offset as needed
+          row = parseFloat(data.row);
+          bar = parseFloat(data.bar);
+
+          // math
+          cursor.style.left =
+            ((bar * bar_width) % screen_width) + first_col_offset + "px";
+          cursor.style.top = row * line_height + first_row_offset + "px";
+
+          // update page
+
+          var pageNumber = data.page_number;
+          if (pageNumber == 1) {
+            cursor.style.left =
+              ((bar * bar_width) % screen_width) + first_col_offset_1 + "px";
+            cursor.style.top = row * line_height_1 + first_row_offset_1 + "px";
+          } else {
+            cursor.style.left =
+              ((bar * bar_width) % screen_width) + first_col_offset + "px";
+            cursor.style.top = row * line_height + first_row_offset + "px";
+          }
+
+          var imageElement = document.getElementById("pageDisplayed");
+          console.log(data.page_number);
+          console.log("BEFORE capybara", imageElement.src);
+          imageElement.src =
+            "{% static '/' %}{{ image }}" + pageNumber + ".jpg";
+          console.log("capybara- After", imageElement.src);
+        },
+      });
+    }
+    // Call the updateVariable function every 200 milliseconds
+    setInterval(updateVariable, 20);
   </script>
 </body>
 

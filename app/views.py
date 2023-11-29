@@ -29,6 +29,7 @@ bar = 0
 row = 0
 turnPage = 0
 
+
 def home(request):
     context = {}
     return render(request, 'app/consent.html', context)
@@ -125,7 +126,7 @@ def upload_pdf(request):
             context['image'] = 'page'
             page_number = 1
             context['page_number'] = page_number
-            #return render(request, 'app/play.html', context)
+            # return render(request, 'app/play.html', context)
             return redirect(reverse('play'))
     else:
         form = UploadForm()
@@ -142,7 +143,7 @@ def play_action(request):
     context['image'] = 'page'
     page_number = 1
     context['page_number'] = page_number
-    #runBackend()
+    # runBackend()
     return render(request, 'app/play.html', context)
 
 
@@ -161,10 +162,8 @@ def flip_forward(request):
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
-    #get_variable(request, page_number)
+    # get_variable(request, page_number)
     return render(request, 'app/play.html', context)
-
-
 
 
 def flip_backward(request):
@@ -410,29 +409,24 @@ def get_list_json_dumps_serializer(request):
     return HttpResponse(response_json, content_type="applications/json")
 
 
-
-
-
-
 def get_variable(request):
     # Compute or get your variable here
     global my_variable
     global bar
     global row
     global page_number
-    # global turnPage 
+    # global turnPage
 
-    page_number = 1
+    page_number = 2
 
     my_variable += 1
     # As long as these variables are updated in a timely manner, this will update the cursor on the page!
-    row = 4
-    bar = 0
-    #PAGENUM = 2
+    row = 2
+    bar = 2
+    # PAGENUM = 2
 
     # Return the variable as JSON
-    return JsonResponse({'my_variable': my_variable, 
+    return JsonResponse({'my_variable': my_variable,
                          'row': row,
-                         'bar': bar, 
+                         'bar': bar,
                          'page_number': page_number})
-
