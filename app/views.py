@@ -125,7 +125,8 @@ def upload_pdf(request):
             context['image'] = 'page'
             page_number = 1
             context['page_number'] = page_number
-            return render(request, 'app/play.html', context)
+            #return render(request, 'app/play.html', context)
+            return redirect(reverse('play'))
     else:
         form = UploadForm()
     return render(request, 'app/upload.html', {'uploadForm': form})
@@ -419,13 +420,9 @@ def get_variable(request):
     global bar
     global row
     global page_number
-    global turnPage
+    # global turnPage 
 
-    if(turnPage==0):
-        page_number = 1
-
-   
-    
+    page_number = 3
 
     my_variable += 1
     # As long as these variables are updated in a timely manner, this will update the cursor on the page!

@@ -117,8 +117,6 @@
                   console.log("BEFORE capybara", imageElement.src);
                   imageElement.src = "{% static '/' %}{{ image }}" + pageNumber + ".jpg";
                   console.log("capybara- After", imageElement.src);
-                  
-                  
               }
           });
       }
