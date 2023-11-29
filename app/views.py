@@ -10,6 +10,7 @@ from PIL import Image
 # import numpy as np
 import json
 import time
+import subprocess
 from django.http import JsonResponse
 
 # backend imports
@@ -24,10 +25,12 @@ pdf_path = ""
 midi_path = ""
 instrument = ""
 images_list = []
+total_pages = 0
 my_variable = 0
 bar = 0
 row = 0
 turnPage = 0
+eyeData = []
 
 
 def home(request):
@@ -57,6 +60,7 @@ def upload_pdf(request):
     global midi_path
     global instrument
     global images_list
+    global total_pages
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -121,6 +125,7 @@ def upload_pdf(request):
 
                 # images_list.append(image_file_name)  # works
                 images_list.append('page')
+            total_pages = len(images_list)
             print("images list in big function ", images_list)
             context['images_list'] = images_list
             context['image'] = 'page'
@@ -151,7 +156,7 @@ def flip_forward(request):
     context = {}
     global page_number
     global images_list
-    total_pages = len(images_list)
+    global total_pages
     page_number += 1
     print("BEFORE images length", total_pages, "page num", page_number)
     # TODO: find total_pages and make it persistent
@@ -376,16 +381,15 @@ def backend(request):
     context = {}
     global page_number
     global images_list
-    page_number += 1
 
     # print(os.path.dirname(os.path.abspath(__file__)))
     # p = subprocess.Popen(args = [r"/mnt/d/CppDemo/CppDemo.cpp"], shell = True,
     #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
 
     # audioSetup()
+    getEyeData()
     context['images_list'] = images_list
     context['image'] = 'page'
-    context['page_number'] = page_number
     return render(request, 'app/play.html', context)
 
 ######################################################################################
@@ -408,6 +412,31 @@ def get_list_json_dumps_serializer(request):
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="applications/json")
 
+def getEyeData():
+    global page_number
+    global images_list
+    global total_pages
+    flippedPage = False
+    startTime = 0
+    p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, 
+                                   stdin = subprocess.PIPE, stdout=subprocess.PIPE)
+    while True:
+        output = p.stdout.readline()
+        if output == b'' and p.poll() is not None:
+            print("broke out of loop\n")
+            break
+        if output:
+            if '1' in output.decode('utf-8'):
+                print(f"saw a 1 should've flipped, {page_number}\n")
+                if page_number < 6 and not flippedPage:
+                    flippedPage = True
+                    startTime = time.time()
+                    page_number += 1
+        if flippedPage and (time.time() - startTime) > 1:
+            flippedPage = False
+         
+    return
+
 
 def get_variable(request):
     # Compute or get your variable here
@@ -417,14 +446,14 @@ def get_variable(request):
     global page_number
     # global turnPage
 
-    page_number = 2
+    # page_number = 1
 
     my_variable += 1
     # As long as these variables are updated in a timely manner, this will update the cursor on the page!
     row = 2
     bar = 2
     # PAGENUM = 2
-
+    
     # Return the variable as JSON
     return JsonResponse({'my_variable': my_variable,
                          'row': row,

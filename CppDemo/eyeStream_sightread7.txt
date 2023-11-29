@@ -1,0 +1,244 @@
+Sample# 0 :-1000,-1000, turn page: 0
+Sample# 1 :-1000,-1000, turn page: 0
+Sample# 2 :-1000,-1000, turn page: 0
+Sample# 3 :-1000,-1000, turn page: 0
+Sample# 4 :-1000,-1000, turn page: 0
+Sample# 5 :-1000,-1000, turn page: 0
+Sample# 6 :-1000,-1000, turn page: 0
+Sample# 7 :-1000,-1000, turn page: 0
+Sample# 8 :-1000,-1000, turn page: 0
+Sample# 9 :-1000,-1000, turn page: 0
+Sample# 10 :-1000,-1000, turn page: 0
+Sample# 11 :-1000,-1000, turn page: 0
+Sample# 12 :-1000,-1000, turn page: 0
+Sample# 13 :-1000,-1000, turn page: 0
+Sample# 14 :-1000,-1000, turn page: 0
+Sample# 15 :-1000,-1000, turn page: 0
+Sample# 16 :-1000,-1000, turn page: 0
+Sample# 17 :-1000,-1000, turn page: 0
+Sample# 18 :-1000,-1000, turn page: 0
+Sample# 19 :-1000,-1000, turn page: 0
+Sample# 20 :-1000,-1000, turn page: 0
+Sample# 21 :-1000,-1000, turn page: 0
+Sample# 22 :-1000,-1000, turn page: 0
+Sample# 23 :-1000,-1000, turn page: 0
+Sample# 24 :-1000,-1000, turn page: 0
+Sample# 25 :-1000,-1000, turn page: 0
+Sample# 26 :-1000,-1000, turn page: 0
+Sample# 27 :-1000,-1000, turn page: 0
+Sample# 28 :-1000,-1000, turn page: 0
+Sample# 29 :-1000,-1000, turn page: 0
+Sample# 30 :-1000,-1000, turn page: 0
+Sample# 31 :-1000,-1000, turn page: 0
+Sample# 32 :-1000,-1000, turn page: 0
+Sample# 33 :-1000,-1000, turn page: 0
+Sample# 34 :-1000,-1000, turn page: 0
+Sample# 35 :-1000,-1000, turn page: 0
+Sample# 36 :-1000,-1000, turn page: 0
+Sample# 37 :-1000,-1000, turn page: 0
+Sample# 38 :-1000,-1000, turn page: 0
+Sample# 39 :-1000,-1000, turn page: 0
+Sample# 40 :-1000,-1000, turn page: 0
+Sample# 41 :-1000,-1000, turn page: 0
+Sample# 42 :-1000,-1000, turn page: 0
+Sample# 43 :-1000,-1000, turn page: 0
+Sample# 44 :-1000,-1000, turn page: 0
+Sample# 45 :-1000,-1000, turn page: 0
+Sample# 46 :-1000,-1000, turn page: 0
+Sample# 47 :-1000,-1000, turn page: 0
+Sample# 48 :-1000,-1000, turn page: 0
+Sample# 49 :-1000,-1000, turn page: 0
+Sample# 50 :-1000,-1000, turn page: 0
+Sample# 51 :-1000,-1000, turn page: 0
+Sample# 52 :-1000,-1000, turn page: 0
+Sample# 53 :-1000,-1000, turn page: 0
+Sample# 54 :-1000,-1000, turn page: 0
+Sample# 55 :-1000,-1000, turn page: 0
+Sample# 56 :-1000,-1000, turn page: 0
+Sample# 57 :-1000,-1000, turn page: 0
+Sample# 58 :-1000,-1000, turn page: 0
+Sample# 59 :-1000,-1000, turn page: 0
+Sample# 60 :-1000,-1000, turn page: 0
+Sample# 61 :-1000,-1000, turn page: 0
+Sample# 62 :-1000,-1000, turn page: 0
+Sample# 63 :-1000,-1000, turn page: 0
+Sample# 64 :-1000,-1000, turn page: 0
+Sample# 65 :-1000,-1000, turn page: 0
+Sample# 66 :-1000,-1000, turn page: 0
+Sample# 67 :-1000,-1000, turn page: 0
+Sample# 68 :-1000,-1000, turn page: 0
+Sample# 69 :-1000,-1000, turn page: 0
+Sample# 70 :-1000,-1000, turn page: 0
+Sample# 71 :-1000,-1000, turn page: 0
+Sample# 72 :-1000,-1000, turn page: 0
+Sample# 73 :-1000,-1000, turn page: 0
+Sample# 74 :-1000,-1000, turn page: 0
+Sample# 75 :-1000,-1000, turn page: 0
+Sample# 76 :-1000,-1000, turn page: 0
+Sample# 77 :-1000,-1000, turn page: 0
+Sample# 78 :-1000,-1000, turn page: 0
+Sample# 79 :-1000,-1000, turn page: 0
+Sample# 80 :-1000,-1000, turn page: 0
+Sample# 81 :-1000,-1000, turn page: 0
+Sample# 82 :-1000,-1000, turn page: 0
+Sample# 83 :-1000,-1000, turn page: 0
+Sample# 84 :-1000,-1000, turn page: 0
+Sample# 85 :-1000,-1000, turn page: 0
+Sample# 86 :-1000,-1000, turn page: 0
+Sample# 87 :-1000,-1000, turn page: 0
+Sample# 88 :-1000,-1000, turn page: 0
+Sample# 89 :-1000,-1000, turn page: 0
+Sample# 90 :-1000,-1000, turn page: 0
+Sample# 91 :-1000,-1000, turn page: 0
+Sample# 92 :-1000,-1000, turn page: 0
+Sample# 93 :-1000,-1000, turn page: 0
+Sample# 94 :-1000,-1000, turn page: 0
+Sample# 95 :-1000,-1000, turn page: 0
+Sample# 96 :-1000,-1000, turn page: 0
+Sample# 97 :-1000,-1000, turn page: 0
+Sample# 98 :-1000,-1000, turn page: 0
+Sample# 99 :-1000,-1000, turn page: 0
+Sample# 100 :-1000,-1000, turn page: 0
+Sample# 101 :-1000,-1000, turn page: 0
+Sample# 102 :-1000,-1000, turn page: 0
+Sample# 103 :-1000,-1000, turn page: 0
+Sample# 104 :-1000,-1000, turn page: 0
+Sample# 105 :-1000,-1000, turn page: 0
+Sample# 106 :-1000,-1000, turn page: 0
+Sample# 107 :-1000,-1000, turn page: 0
+Sample# 108 :-1000,-1000, turn page: 0
+Sample# 109 :-1000,-1000, turn page: 0
+Sample# 110 :-1000,-1000, turn page: 0
+Sample# 111 :585.008,724.716, turn page: 0
+Sample# 112 :538.949,721.802, turn page: 0
+Sample# 113 :438.296,547.759, turn page: 0
+Sample# 114 :360.408,391.373, turn page: 0
+Sample# 115 :317.655,289.986, turn page: 0
+Sample# 116 :297.655,230.561, turn page: 0
+Sample# 117 :288.374,200.966, turn page: 0
+Sample# 118 :283.075,180.726, turn page: 0
+Sample# 119 :276.428,171.282, turn page: 0
+Sample# 120 :260.589,179.181, turn page: 0
+Sample# 121 :233.931,181.789, turn page: 0
+Sample# 122 :217.401,184.197, turn page: 0
+Sample# 123 :207.34,185.92, turn page: 0
+Sample# 124 :201.498,188.012, turn page: 0
+Sample# 125 :199.773,188.443, turn page: 0
+Sample# 126 :193.797,212.911, turn page: 0
+Sample# 127 :190.273,229.308, turn page: 0
+Sample# 128 :189.923,224.562, turn page: 0
+Sample# 129 :185.631,243.202, turn page: 0
+Sample# 130 :183.441,260.761, turn page: 0
+Sample# 131 :185.525,254.701, turn page: 0
+Sample# 132 :222.141,282.514, turn page: 0
+Sample# 133 :270.338,342.243, turn page: 0
+Sample# 134 :317.572,387.171, turn page: 0
+Sample# 135 :337.9,393.04, turn page: 0
+Sample# 136 :353.125,404.517, turn page: 0
+Sample# 137 :360.355,407.483, turn page: 0
+Sample# 138 :390.035,397.779, turn page: 0
+Sample# 139 :409.868,390.819, turn page: 0
+Sample# 140 :426.106,391.211, turn page: 0
+right page turn
+right page turn
+Sample# 141 :460.75,506.815, turn page: 0
+right page turn
+right page turn
+Sample# 142 :499.542,611.93, turn page: 0
+right page turn
+right page turn
+Sample# 143 :496.134,575.569, turn page: 0
+right page turn
+right page turn
+Sample# 144 :-1000,-1000, turn page: 0
+Sample# 145 :-1000,-1000, turn page: 0
+Sample# 146 :-1000,-1000, turn page: 0
+Sample# 147 :623.172,972.474, turn page: 0
+Sample# 148 :-1000,-1000, turn page: 0
+Sample# 149 :-1000,-1000, turn page: 0
+Sample# 150 :-1000,-1000, turn page: 0
+Sample# 151 :-1000,-1000, turn page: 0
+Sample# 152 :-1000,-1000, turn page: 0
+Sample# 153 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 154 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 155 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 156 :-1000,-1000, turn page: 0
+right page turn
+Sample# 157 :-1000,-1000, turn page: 0
+right page turn
+Sample# 158 :-1000,-1000, turn page: 0
+right page turn
+Sample# 159 :-1000,-1000, turn page: 0
+right page turn
+Sample# 160 :-1000,-1000, turn page: 0
+right page turn
+Sample# 161 :-1000,-1000, turn page: 0
+right page turn
+Sample# 162 :-1000,-1000, turn page: 0
+right page turn
+Sample# 163 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 164 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 165 :-1000,-1000, turn page: 0
+right page turn
+right page turn
+Sample# 166 :-1000,-1000, turn page: 0
+Sample# 167 :-1000,-1000, turn page: 0
+Sample# 168 :-1000,-1000, turn page: 0
+Sample# 169 :-1000,-1000, turn page: 0
+Sample# 170 :-1000,-1000, turn page: 0
+Sample# 171 :-1000,-1000, turn page: 0
+Sample# 172 :-1000,-1000, turn page: 0
+Sample# 173 :-1000,-1000, turn page: 0
+Sample# 174 :-1000,-1000, turn page: 0
+Sample# 175 :-1000,-1000, turn page: 0
+Sample# 176 :-1000,-1000, turn page: 0
+Sample# 177 :-1000,-1000, turn page: 0
+Sample# 178 :-1000,-1000, turn page: 0
+Sample# 179 :-1000,-1000, turn page: 0
+Sample# 180 :-1000,-1000, turn page: 0
+Sample# 181 :-1000,-1000, turn page: 0
+Sample# 182 :-1000,-1000, turn page: 0
+Sample# 183 :-1000,-1000, turn page: 0
+Sample# 184 :-1000,-1000, turn page: 0
+Sample# 185 :-1000,-1000, turn page: 0
+Sample# 186 :-1000,-1000, turn page: 0
+Sample# 187 :-1000,-1000, turn page: 0
+Sample# 188 :-1000,-1000, turn page: 0
+Sample# 189 :-1000,-1000, turn page: 0
+Sample# 190 :-1000,-1000, turn page: 0
+Sample# 191 :-1000,-1000, turn page: 0
+Sample# 192 :-1000,-1000, turn page: 0
+Sample# 193 :-1000,-1000, turn page: 0
+Sample# 194 :-1000,-1000, turn page: 0
+Sample# 195 :-1000,-1000, turn page: 0
+Sample# 196 :-1000,-1000, turn page: 0
+Sample# 197 :-1000,-1000, turn page: 0
+Sample# 198 :-1000,-1000, turn page: 0
+Sample# 199 :-1000,-1000, turn page: 0
+Sample# 200 :-1000,-1000, turn page: 0
+Sample# 201 :-1000,-1000, turn page: 0
+Sample# 202 :-1000,-1000, turn page: 0
+Sample# 203 :-1000,-1000, turn page: 0
+Sample# 204 :-1000,-1000, turn page: 0
+Sample# 205 :-1000,-1000, turn page: 0
+Sample# 206 :-1000,-1000, turn page: 0
+Sample# 207 :-1000,-1000, turn page: 0
+Sample# 208 :-1000,-1000, turn page: 0
+Sample# 209 :-1000,-1000, turn page: 0
+Sample# 210 :-1000,-1000, turn page: 0
+Sample# 211 :-1000,-1000, turn page: 0
+Sample# 212 :-1000,-1000, turn page: 0
+Sample# 213 :-1000,-1000, turn page: 0
+Sample# 214 :-1000,-1000, turn page: 0
+Sample# 215 :-1000,-1000, turn page: 0
+Sample# 216 :-1000,-1000, turn page: 0
