@@ -29,10 +29,7 @@
     "
   ></div>
 
-  <div id="user-hello"></div>
 
-  {{ room_name|json_script:"room-name"}}
- 
 
   <div class="pages" style="display: flex">
     <button
@@ -46,12 +43,14 @@
     </button>
 
     <img
-      class="page"
-      src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
-      alt="page {{ forloop.counter }}"
-      width="600"
-      height="800"
+        id="pageDisplayed"
+        class="page"
+        src="{% static '/' %}{{ image }}{{ page_number }}.jpg"
+        alt="page {{ forloop.counter }}"
+        width="600"
+        height="800"
     />
+    
 
     <button
       id="forward"
@@ -108,6 +107,17 @@
                   cursor.style.left = ((bar * bar_width)%screen_width) + first_col_offset + 'px';
                   cursor.style.top = (row * line_height) + first_row_offset + 'px';
 
+                  // update page
+                  
+                  var pageNumber = data.page_number 
+                  
+                  
+                  var imageElement = document.getElementById('pageDisplayed');
+                  console.log(data.page_number)
+                  console.log("BEFORE capybara", imageElement.src);
+                  imageElement.src = "{% static '/' %}{{ image }}" + pageNumber + ".jpg";
+                  console.log("capybara- After", imageElement.src);
+                  
                   
               }
           });

@@ -9,6 +9,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 # import numpy as np
 import json
+import time
 from django.http import JsonResponse
 
 # backend imports
@@ -23,7 +24,10 @@ pdf_path = ""
 midi_path = ""
 instrument = ""
 images_list = []
-
+my_variable = 0
+bar = 0
+row = 0
+turnPage = 0
 
 def home(request):
     context = {}
@@ -156,7 +160,10 @@ def flip_forward(request):
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
+    #get_variable(request, page_number)
     return render(request, 'app/play.html', context)
+
+
 
 
 def flip_backward(request):
@@ -169,6 +176,7 @@ def flip_backward(request):
     context['images_list'] = images_list
     context['image'] = 'page'
     context['page_number'] = page_number
+   # get_variable(request, page_number)
     return render(request, 'app/play.html', context)
 
 ########################################################################################
@@ -402,9 +410,7 @@ def get_list_json_dumps_serializer(request):
 
 
 
-my_variable = 0
-bar = 0
-row = 0
+
 
 
 def get_variable(request):
@@ -412,12 +418,24 @@ def get_variable(request):
     global my_variable
     global bar
     global row
+    global page_number
+    global turnPage
+
+    if(turnPage==0):
+        page_number = 1
+
+   
+    
+
     my_variable += 1
     # As long as these variables are updated in a timely manner, this will update the cursor on the page!
     row = 4
     bar = 0
+    #PAGENUM = 2
 
     # Return the variable as JSON
     return JsonResponse({'my_variable': my_variable, 
                          'row': row,
-                         'bar': bar})
+                         'bar': bar, 
+                         'page_number': page_number})
+
