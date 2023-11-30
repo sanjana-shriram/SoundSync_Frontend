@@ -24,14 +24,25 @@
       <div>
         Fill out the following fields
         <p>
-          Click submit and please upload a PDF, MIDI file, and choose your
-          instrument
+          Please upload a PDF, MIDI file, choose your
+          instrument, and Click Submit
         </p>
       </div>
       <table>
         {% for field in uploadForm.visible_fields %}
         <tr>
-          <td>{{field}}</td>
+          
+          <td>
+            <div id="{{field.name}}_box"> {{field}} </div>
+            <div id="{{field.name}}_text"> {{field.name | upper}} </div>
+            
+
+          </td>
+          
+          
+
+          <td> </td>
+          
           <td class="error">
             {% for error in field.errors %} {{error}} {% endfor %}
           </td>
@@ -46,7 +57,7 @@
 
     
 
-    <div>
+    <div id="buttoner">
       <a class="button" href="{% url 'play' %}">Next Page</a>
     </div>
   </div>
