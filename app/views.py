@@ -7,17 +7,21 @@ from app.models import Upload
 from app.forms import UploadForm
 from pdf2image import convert_from_path
 from PIL import Image
-# import numpy as np
+import numpy as np
 import json
 import time
 import subprocess
 from django.http import JsonResponse
+import concurrent.futures
+
 
 # backend imports
-# from pvrecorder import PvRecorder
-# import librosa
-# from synctoolbox.dtw.cost import cosine_distance
-# from synctoolbox.dtw.core import compute_warping_path
+import matplotlib.pyplot as plt
+from libfmp.b.b_plot import plot_signal, plot_chromagram
+from pvrecorder import PvRecorder
+import librosa
+from synctoolbox.dtw.cost import cosine_distance
+from synctoolbox.dtw.core import compute_warping_path
 
 # Sexy Global Variables
 page_number = 1
@@ -31,6 +35,7 @@ bar = 0
 row = 0
 turnPage = 0
 eyeData = []
+
 
 
 def home(request):
@@ -228,50 +233,50 @@ def flip_backward(request):
 
 #     return trimmed_chroma_matrix
 
-# def highest_average_in_window(vector, window_size):
-#     """
-#     Find the highest average within a moving window of a given size for a vector.
+def highest_average_in_window(vector, window_size):
+    """
+    Find the highest average within a moving window of a given size for a vector.
 
-#     Parameters:
-#     - vector (list or numpy.ndarray): Input vector.
-#     - window_size (int): Size of the moving window.
+    Parameters:
+    - vector (list or numpy.ndarray): Input vector.
+    - window_size (int): Size of the moving window.
 
-#     Returns:
-#     - float: Highest average within the moving window.
-#     - int: Starting index of the window with the highest average.
-#     """
-#     if len(vector) < window_size or window_size <= 0:
-#         raise ValueError("Invalid window size or vector length.")
+    Returns:
+    - float: Highest average within the moving window.
+    - int: Starting index of the window with the highest average.
+    """
+    if len(vector) < window_size or window_size <= 0:
+        raise ValueError("Invalid window size or vector length.")
 
-#     max_average = float('-inf')
-#     max_average_index = 0
+    max_average = float('-inf')
+    max_average_index = 0
 
-#     for i in range(len(vector) - window_size + 1):
-#         window_sum = sum(vector[i:i+window_size])
-#         window_average = window_sum / window_size
+    for i in range(len(vector) - window_size + 1):
+        window_sum = sum(vector[i:i+window_size])
+        window_average = window_sum / window_size
 
-#         if window_average > max_average:
-#             max_average = window_average
-#             max_average_index = i
+        if window_average > max_average:
+            max_average = window_average
+            max_average_index = i
 
-#     return max_average, max_average_index
+    return max_average, max_average_index
 
-# def threshold_and_zero(array, threshold):
-#     """
-#     Set every element in a NumPy array greater than a threshold to zero.
+def threshold_and_zero(array, threshold):
+    """
+    Set every element in a NumPy array greater than a threshold to zero.
 
-#     Parameters:
-#     - array (numpy.ndarray): Input NumPy array.
-#     - threshold (float): Threshold value.
+    Parameters:
+    - array (numpy.ndarray): Input NumPy array.
+    - threshold (float): Threshold value.
 
-#     Returns:
-#     - numpy.ndarray: Modified array.
-#     """
-#     return np.where(array > threshold, 0, array)
+    Returns:
+    - numpy.ndarray: Modified array.
+    """
+    return np.where(array > threshold, 0, array)
 # #####################################################################################
 
-# def compute_chroma(audio, sr, N, H):
-#     return librosa.feature.chroma_stft(y=audio, sr=sr, n_fft=N, hop_length=H, norm=2.0)
+def compute_chroma(audio, sr, N, H):
+    return librosa.feature.chroma_stft(y=audio, sr=sr, n_fft=N, hop_length=H, norm=2.0)
 
 # # NOTE: need to add entire folder into this github repo
 # def getEyeData():
@@ -280,54 +285,55 @@ def flip_backward(request):
 #     stdout, stderr = p.communicate()
 #     return stdout.decode('utf-8')
 
-# def getAudioData(recorder):
-#     recorder.start()
-#     startTime = time.time()
-#     liveAudio = None
-#     #NOTE: to change length of audio segemtn
-#     audioSegLength = 0.25
-#     while time.time() - startTime < audioSegLength:
-#         frame = recorder.read()
-#         npFrame = np.asarray(frame)
-#         npFrame = np.divide(npFrame, 2**15)
-#         if type(liveAudio) == type(None):
-#             liveAudio = npFrame
-#         else:
-#             liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
-#     return liveAudio
+def getAudioData(recorder):
+    recorder.start()
+    startTime = time.time()
+    liveAudio = None
+    #NOTE: to change length of audio segemtn
+    audioSegLength = 0.25
+    while time.time() - startTime < audioSegLength:
+        frame = recorder.read()
+        print(frame)    
+        npFrame = np.asarray(frame)
+        npFrame = np.divide(npFrame, 2**15)
+        if type(liveAudio) == type(None):
+            liveAudio = npFrame
+        else:
+            liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
+    return liveAudio
 
 
-# def alignAudio(refAudio, liveAudio):
-#     Fs_ref = 48100 #22050
-#     Fs_live = 16000
-#     N = 1024
-#     H = 512
-#     feature_rate = int(48100 / H)
+def alignAudio(refAudio, liveAudio):
+    Fs_ref = 48100 #22050
+    Fs_live = 16000
+    N = 1024
+    H = 512
+    feature_rate = int(48100 / H)
 
-#     #make into chromas
-#     with concurrent.futures.ThreadPoolExecutor() as executor:
-#         # Submit the function calls to the thread pool
-#         print(Fs_live)
-#         future_chroma_1 = executor.submit(compute_chroma, refAudio, Fs_ref, N, H)
-#         future_chroma_2 = executor.submit(compute_chroma, liveAudio, Fs_ref, N, H)
+    #make into chromas
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Submit the function calls to the thread pool
+        print(Fs_live)
+        future_chroma_1 = executor.submit(compute_chroma, refAudio, Fs_ref, N, H)
+        future_chroma_2 = executor.submit(compute_chroma, liveAudio, Fs_ref, N, H)
 
-#         # Get the results when they are ready
-#         refChroma = future_chroma_1.result()
-#         liveChroma = future_chroma_2.result()
+        # Get the results when they are ready
+        refChroma = future_chroma_1.result()
+        liveChroma = future_chroma_2.result()
 
-#     plot_chromagram(refChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
-#     # plt.show()
-#     plot_chromagram(liveChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
-#     # plt.show()
+    # plot_chromagram(refChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
+    # plt.show()
+    # plot_chromagram(liveChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for liveChroms', figsize=(9,3))
+    # plt.show()
 
-#     C = cosine_distance(refChroma, liveChroma)
-#     D, E, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
-#     coordinates = np.column_stack((wp_full[0, :], wp_full[1, :]))
-#     dx, dy = np.gradient(coordinates[:, 0]), np.gradient(coordinates[:, 1])
-#     maxAvg, startPoint = highest_average_in_window(threshold_and_zero(dy, 1), liveChroma.shape[1])
+    C = cosine_distance(refChroma, liveChroma)
+    D, E, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
+    coordinates = np.column_stack((wp_full[0, :], wp_full[1, :]))
+    dx, dy = np.gradient(coordinates[:, 0]), np.gradient(coordinates[:, 1])
+    maxAvg, startPoint = highest_average_in_window(threshold_and_zero(dy, 1), liveChroma.shape[1])
 
-#     print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}")
-#     return
+    print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}")
+    return
 
 
 # # on backend, want to start right after files submitted
@@ -387,7 +393,12 @@ def backend(request):
     #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
 
     # audioSetup()
-    getEyeData()
+    # getEyeData()
+    recorder = PvRecorder(frame_length=1024, device_index=0)
+    print(recorder.get_available_devices())
+    liveAudio = getAudioData(recorder)
+    refAudio, _ = librosa.load(r"C:\Users\Owner\Documents\Capstone\Front-end\SoundSync_Frontend\app\outputs\C_Scale.wav", sr = 48100) 
+    alignAudio(refAudio, liveAudio)
     context['images_list'] = images_list
     context['image'] = 'page'
     return render(request, 'app/play.html', context)
@@ -418,22 +429,37 @@ def getEyeData():
     global total_pages
     flippedPage = False
     startTime = 0
-    p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, 
+    # p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, #Caleb Help
+    #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
+    
+    
+    p = subprocess.Popen(args = [r".\TobiiDemo\x64\Debug\TobiiDemo.exe"], shell = True, #Rohan Help
                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE)
+
     while True:
         output = p.stdout.readline()
+        # print("output: ", output)
+        # print("total pages", total_pages)
         if output == b'' and p.poll() is not None:
             print("broke out of loop\n")
             break
         if output:
             if '1' in output.decode('utf-8'):
-                print(f"saw a 1 should've flipped, {page_number}\n")
-                if page_number < 6 and not flippedPage:
+                #print(f"saw a 1 should've flipped, {page_number}\n")
+                if page_number < total_pages and not flippedPage:
                     flippedPage = True
                     startTime = time.time()
                     page_number += 1
+            elif '2' in output.decode('utf-8'):
+                #print(f"saw a 2 should've flipped, {page_number}\n")
+                if page_number > 1 and not flippedPage:
+                    flippedPage = True
+                    startTime = time.time()
+                    page_number -= 1
+                   
         if flippedPage and (time.time() - startTime) > 1:
             flippedPage = False
+        print("page number", page_number, "\n")
          
     return
 

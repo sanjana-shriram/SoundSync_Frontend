@@ -1,0 +1,2 @@
+C:\Users\Owner\source\repos\TobiiDemo\x64\Debug\TobiiDemo.exe
+C:\Users\Owner\Documents\Capstone\Front-end\SoundSync_Frontend\TobiiDemo\x64\Debug\TobiiDemo.exe
