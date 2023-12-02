@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Upload(models.Model):
     pdf = models.FileField(upload_to='outputs/')
     midi = models.FileField(blank=True)
+
     ORCHESTRA_INSTRUMENT_CHOICES = [
         ('violin', 'Violin'),
         ('viola', 'Viola'),

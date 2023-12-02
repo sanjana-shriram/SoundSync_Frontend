@@ -98,7 +98,7 @@
         method: "GET",
         success: function (data) {
           // Update the content of the #variable-container div
-          $("#variable-container").text(data.my_variable);
+          $("#variable-container").text(data.absBeatNum);
 
           // Update the left position of the cursor based on the received variable
           var cursor = document.getElementById("cursor");
@@ -126,10 +126,8 @@
 
           var imageElement = document.getElementById("pageDisplayed");
           console.log(data.page_number);
-          console.log("BEFORE capybara", imageElement.src);
           imageElement.src =
             "{% static '/' %}{{ image }}" + pageNumber + ".jpg";
-          console.log("capybara- After", imageElement.src);
         },
       });
     }

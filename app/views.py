@@ -13,6 +13,8 @@ import time
 import subprocess
 from django.http import JsonResponse
 import concurrent.futures
+import pretty_midi
+
 
 
 # backend imports
@@ -35,6 +37,14 @@ bar = 0
 row = 0
 turnPage = 0
 eyeData = []
+
+
+# For Audoi AJAX Calls
+pageNum = 0
+relMeasureNum = 0
+measureNum = 0
+relBeatNum = 0
+absBeatNum = 0
 
 
 
@@ -92,9 +102,11 @@ def upload_pdf(request):
                 for chunk in midi_file.chunks():
                     destination.write(chunk)
 
-            # Save PDF as images
+            
             midi_path = os.path.join(output_folder, midi_file.name)
             print("MIDI path!", midi_path)
+
+            
 
             # Get the instrument
             instrument = form.cleaned_data['instrument']
@@ -278,6 +290,23 @@ def threshold_and_zero(array, threshold):
 def compute_chroma(audio, sr, N, H):
     return librosa.feature.chroma_stft(y=audio, sr=sr, n_fft=N, hop_length=H, norm=2.0)
 
+def getMeasureNum(time):
+    global pageNum
+    global relMeasureNum
+    global measureNum
+    global relBeatNum
+    global absBeatNum
+    
+    
+    tempo = 120
+    secPerBeat = (tempo / (60)) ** -1
+    absBeatNum = round((round(time * 2) / 2) / secPerBeat)
+    relBeatNum = absBeatNum % 4
+    measureNum = absBeatNum // 4
+    relMeasureNum = measureNum % 32
+    pageNum = (measureNum // 32) + 1
+    return pageNum, relMeasureNum, measureNum, relBeatNum, absBeatNum,
+
 # # NOTE: need to add entire folder into this github repo
 # def getEyeData():
 #     p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True,
@@ -290,10 +319,11 @@ def getAudioData(recorder):
     startTime = time.time()
     liveAudio = None
     #NOTE: to change length of audio segemtn
-    audioSegLength = 0.25
-    while time.time() - startTime < audioSegLength:
+    # audioSegLength = 0.25
+    # while time.time() - startTime < audioSegLength:
+    for _ in range(50):
         frame = recorder.read()
-        print(frame)    
+        # print(frame)    
         npFrame = np.asarray(frame)
         npFrame = np.divide(npFrame, 2**15)
         if type(liveAudio) == type(None):
@@ -313,14 +343,13 @@ def alignAudio(refAudio, liveAudio):
     #make into chromas
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit the function calls to the thread pool
-        print(Fs_live)
         future_chroma_1 = executor.submit(compute_chroma, refAudio, Fs_ref, N, H)
-        future_chroma_2 = executor.submit(compute_chroma, liveAudio, Fs_ref, N, H)
+        future_chroma_2 = executor.submit(compute_chroma, liveAudio, Fs_live, N, H)
 
         # Get the results when they are ready
         refChroma = future_chroma_1.result()
         liveChroma = future_chroma_2.result()
-
+    # refChroma = refAudio.get_chroma(fs = 100)
     # plot_chromagram(refChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for version 2', figsize=(9,3))
     # plt.show()
     # plot_chromagram(liveChroma[:, :30 * feature_rate], Fs=feature_rate, title='Chroma representation for liveChroms', figsize=(9,3))
@@ -332,8 +361,24 @@ def alignAudio(refAudio, liveAudio):
     dx, dy = np.gradient(coordinates[:, 0]), np.gradient(coordinates[:, 1])
     maxAvg, startPoint = highest_average_in_window(threshold_and_zero(dy, 1), liveChroma.shape[1])
 
-    print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}")
+    getMeasureNum(startPoint * (H/Fs_ref))
+    print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}, page, measure, beat num: {getMeasureNum(startPoint * (H/Fs_ref))}")
     return
+
+# Sending Audio Data to Frontend AJAX
+# def sendCursorData(request):
+    # global pageNum
+    # global measureNum
+    # global relBeatNum
+    # global absBeatNum
+
+    # pageNum = 32
+    # absBeatNum = 9
+
+    # return JsonResponse({'paegNum': pageNum,
+    #                      'measureNum': measureNum,
+    #                      'relBeatNum': relBeatNum,
+    #                      'absBeatNum': absBeatNum})
 
 
 # # on backend, want to start right after files submitted
@@ -391,16 +436,19 @@ def backend(request):
     # print(os.path.dirname(os.path.abspath(__file__)))
     # p = subprocess.Popen(args = [r"/mnt/d/CppDemo/CppDemo.cpp"], shell = True,
     #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
-
+    
     # audioSetup()
-    # getEyeData()
-    recorder = PvRecorder(frame_length=1024, device_index=0)
-    print(recorder.get_available_devices())
-    liveAudio = getAudioData(recorder)
-    refAudio, _ = librosa.load(r"C:\Users\Owner\Documents\Capstone\Front-end\SoundSync_Frontend\app\outputs\C_Scale.wav", sr = 48100) 
-    alignAudio(refAudio, liveAudio)
+    getEyeData()
+    # recorder = PvRecorder(frame_length=1024, device_index=0)
+    # print(recorder.get_available_devices())
+    # # refAudio, _ = librosa.load(r"C:\Users\Owner\Documents\Capstone\Front-end\SoundSync_Frontend\app\outputs\C_Major_Scale.mid", sr = 48100) 
+    # refAudio, _ = librosa.load(r"C:\Users\Owner\Documents\Capstone\Front-end\SoundSync_Frontend\app\outputs\C_Scale.wav", sr = 48100)
+    # while True:
+    #     liveAudio = getAudioData(recorder)
+    #     alignAudio(refAudio, liveAudio)
     context['images_list'] = images_list
     context['image'] = 'page'
+
     return render(request, 'app/play.html', context)
 
 ######################################################################################
@@ -438,17 +486,18 @@ def getEyeData():
 
     while True:
         output = p.stdout.readline()
-        # print("output: ", output)
+        print("output: ", output)
         # print("total pages", total_pages)
         if output == b'' and p.poll() is not None:
             print("broke out of loop\n")
             break
         if output:
             if '1' in output.decode('utf-8'):
-                #print(f"saw a 1 should've flipped, {page_number}\n")
+               # print(f"saw a 1 should've flipped, {page_number}\n")
                 if page_number < total_pages and not flippedPage:
                     flippedPage = True
                     startTime = time.time()
+                    print(f"saw a 1 should've flipped, {page_number}\n")
                     page_number += 1
             elif '2' in output.decode('utf-8'):
                 #print(f"saw a 2 should've flipped, {page_number}\n")
@@ -460,6 +509,7 @@ def getEyeData():
         if flippedPage and (time.time() - startTime) > 1:
             flippedPage = False
         print("page number", page_number, "\n")
+        print("total pages:", total_pages, "flippedPage", flippedPage,"\n")
          
     return
 
@@ -479,9 +529,30 @@ def get_variable(request):
     row = 2
     bar = 2
     # PAGENUM = 2
+
+
+    global pageNum
+    global relMeasureNum    
+    global measureNum
+    global relBeatNum
+    global absBeatNum
+
+
+    # find row and bar from these 
+    row = relMeasureNum // 4
+    bar = relMeasureNum % 4 + (relBeatNum)/4
     
+
+    # pageNum = 32
+    
+
     # Return the variable as JSON
     return JsonResponse({'my_variable': my_variable,
                          'row': row,
                          'bar': bar,
-                         'page_number': page_number})
+                         'page_number': page_number, #page_number 
+                         'pageNum': pageNum,
+                         'relMeasureNum': relMeasureNum,
+                         'measureNum': measureNum,
+                         'relBeatNum': relBeatNum,
+                         'absBeatNum': absBeatNum})

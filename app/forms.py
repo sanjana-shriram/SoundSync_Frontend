@@ -7,7 +7,6 @@ MAX_UPLOAD_SIZE = 25000000
 class UploadForm(forms.ModelForm):
     class Meta:
         model = Upload
-        # fields = ('instrument', 'pdf', 'midi')
         fields = ('pdf', 'midi', 'instrument')
 
     def clean_instrument(self):
@@ -39,3 +38,5 @@ class UploadForm(forms.ModelForm):
             raise forms.ValidationError(
                 'File too big (max size is {0} bytes)'.format(MAX_UPLOAD_SIZE))
         return midi
+    
+    
