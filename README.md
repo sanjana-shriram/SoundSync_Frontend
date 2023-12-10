@@ -64,3 +64,4 @@ python3 manage.py runserver
 importing PILLOW:
 pip uninstall pillow
 pip reinstall pdf2image
+pip install synctoolbox

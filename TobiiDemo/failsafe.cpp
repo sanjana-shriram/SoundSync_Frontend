@@ -11,6 +11,7 @@
 #include <ctime>
 #include <thread>
 
+
 using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
@@ -240,6 +241,7 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
         //eyeStream << gaze_point->position_xy[0] << "," << gaze_point->position_xy[1] << "\n";
         eyeStream << "Sample# " << iteration << " :" << xPos << "," << yPos << ", turn page: "
             << turnPageSig << "\n";
+       
      
         iteration++;
     }
@@ -260,7 +262,7 @@ int main()
 {
     // Create API
     cout << "Code INIT..." << endl;
-
+    
     tobii_api_t* api = NULL;
     tobii_error_t result = tobii_api_create(&api, NULL, NULL);
     assert(result == TOBII_ERROR_NO_ERROR);
@@ -269,6 +271,8 @@ int main()
     if (version_error == TOBII_ERROR_NO_ERROR)
         printf("Current API version: %d.%d.%d\n", version.major, version.minor,
             version.revision);
+    
+    
 
 
     // Enumerate devices to find connected eye trackers, keep the first
@@ -281,30 +285,38 @@ int main()
         cout << "Error: No Device Found" << endl;
         return 1;
     }
+    
+
 
 
     // Connect to the first tracker found
     tobii_device_t* device = NULL;
     result = tobii_device_create(api, url, TOBII_FIELD_OF_USE_INTERACTIVE, &device);
     assert(result == TOBII_ERROR_NO_ERROR);
+   
+    
 
     // Subscribe to gaze data
     result = tobii_gaze_point_subscribe(device, gaze_point_callback, 0);
     assert(result == TOBII_ERROR_NO_ERROR);
+    
+    
 
     //sleep_for(seconds(4));
     cout << "Code Start..." << endl;
     limit = ((60 * 8) / tempo) * 30;
 
-
+   
     //open file
     eyeStream.open("eyeStream_sightread7.txt");
 
     //while (true) {
 
-    for (int i = 0; i < 3000; i++)
+    for (int i = 0; i < 100000; i++)
     {
         // Optionally block this thread until data is available. Especially useful if running in a separate thread.
+       
+        
         result = tobii_wait_for_callbacks(1, &device);
         assert(result == TOBII_ERROR_NO_ERROR || result == TOBII_ERROR_TIMED_OUT);
 
