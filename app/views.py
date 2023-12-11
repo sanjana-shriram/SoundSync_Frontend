@@ -50,6 +50,8 @@ start = False
 process = None
 usingAudio = False
 usingEye = False
+isSound = False
+cursorMoves = True
 
 
 
@@ -871,6 +873,7 @@ def backend(request):
     start = True
     global usingAudio
     global usingEye
+    global isSound
 
     # SETUP
     #print("midi_path: ",midi_path) NOTE: use midipath
@@ -890,7 +893,7 @@ def backend(request):
         elif usingAudio and not usingEye:
             #do audio
             liveAudio = None
-            for i in range(50):
+            for i in range(45):
                 frame = recorder.read()
                 # print(time.time() - startTime)
                 npFrame = np.asarray(frame)
@@ -907,7 +910,9 @@ def backend(request):
                 # print(f"confidence: {confidence} matchlist: {matchList}")
                 # print("\n\n")
                 # print(f"continued... time it took to get to here is {time.time() - startTime}")
+                isSound = False
                 continue
+            isSound = True
             bestMatch = getBestMatch(matchList)  
             if bestMatch[2] + 1 >= len(refMidiList):
                 endNote = refMidiList[-1]
@@ -917,7 +922,7 @@ def backend(request):
             row, bar = (tempMeasureNum - 1) // 4, (tempMeasureNum - 1) % 4
             bar += ((endNote[3] - 1) / 4)
             page_number = endNote[1] #endNote = (noteName, pageNum, measureNum, beatNum)
-            print(f"capybara pageNum {page_number}, row {row}, bar {bar}, endNote {endNote}")
+            # print(f"capybara pageNum {page_number}, row {row}, bar {bar}, endNote {endNote}")
             
 
         elif usingEye and not usingAudio:
@@ -990,6 +995,9 @@ def get_variable(request):
     global measureNum
     global relBeatNum
     global absBeatNum
+    global cursorMoves
+    global usingAudio
+    global isSound
 
 
     # find row and bar from these 
@@ -1003,10 +1011,13 @@ def get_variable(request):
     #         bar+=0.0105 # 120 bpm
     #     #bar+= 0.05
     
-    #bar+= 0.0105 #120 bpm
+   
     if total_pages==0:
         total_pages = 3
-    #bar += 0.025
+    
+    
+    if (isSound and usingAudio and cursorMoves):
+        bar += 0.025 #1120 bpm
 
     if(bar >=4 ):
         row+=1
