@@ -62,26 +62,26 @@ bool seenLine5 = false;
 bool seenLine6 = false;
 bool seenLine7 = false;
 
-std::string output[] = { "-1:-1:0", "-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0",
-"-1:-1:0","-1:-1:0","-1:-1:0"};
+std::string output[] = { "-1:-1:0", "-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0",
+"-1:-1:0", "-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0" };
 
 //Rohan's numbers
 double yLine1L = 300;
-double yLine1H = 350;
-double yLine2L = 385;
-double yLine2H = 440;
-double yLine3L = 455;
-double yLine3H = 500;
-double yLine4L = 540;
-double yLine4H = 585;
-double yLine5L = 620;
-double yLine5H = 675;
-double yLine6L = 690;
-double yLine6H = 750;
-double yLine7L = 775;
-double yLine7H = 830;
-double yLine8L = 850;
-double yLine8H = 950;
+double yLine1H = 365;
+double yLine2L = 365;
+double yLine2H = 450;
+double yLine3L = 450;
+double yLine3H = 525;
+double yLine4L = 525;
+double yLine4H = 610;
+double yLine5L = 610;
+double yLine5H = 685;
+double yLine6L = 685;
+double yLine6H = 765;
+double yLine7L = 765;
+double yLine7H = 845;
+double yLine8L = 845;
+double yLine8H = 975;
 
 double xbar1S = 65;
 double xbar1E = 140;
@@ -91,6 +91,9 @@ double xbar3S = 205;
 double xbar3E = 260;
 double xbar4S = 260;
 double xbar4E = 341;
+
+double counter2 = 0;
+double limit2 = 80;
 
 std::string resString = "";
 
@@ -115,25 +118,25 @@ void updateOutput(int newRow, int newBar, int newSig) {
 
 
 int calcRow(double y) {
-    if (yLine1L <= y && y <= yLine1H) {
+    if (yLine1L <= y && y < yLine1H) {
         return 0;
     }
-    else if (yLine2L <= y && y <= yLine2H) {
+    else if (yLine2L <= y && y < yLine2H) {
         return 1;
     }
-    else if (yLine3L <= y && y <= yLine3H) {
+    else if (yLine3L <= y && y < yLine3H) {
         return 2;
     }
-    else if (yLine4L <= y && y <= yLine4H) {
+    else if (yLine4L <= y && y < yLine4H) {
         return 3;
     }
-    else if (yLine5L <= y && y <= yLine5H) {
+    else if (yLine5L <= y && y < yLine5H) {
         return 4;
     }
-    else if (yLine6L <= y && y <= yLine6H) {
+    else if (yLine6L <= y && y < yLine6H) {
         return 5;
     }
-    else if (yLine7L <= y && y <= yLine7H) {
+    else if (yLine7L <= y && y < yLine7H) {
         return 6;
     }
     else if (yLine8L <= y && y <= yLine8H) {
@@ -176,27 +179,47 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     if (350 <= xPos && xPos <= 460 && 210 <= yPos && yPos<=300) {
         turnPageSig = 1;
     }
-                          //override turn left button gaze on Rohan's computer numbers
+      //override turn left button gaze on Rohan's computer numbers and Rohan's eyes
+    /*
     else if (10 <= xPos && xPos <= 70 && 250 <= yPos && yPos <= 360) {
+        turnPageSig = 2;
+    }
+    */
+
+    else if (-20 <= xPos && xPos <= 50 && 200 <= yPos && yPos <= 280) {
         turnPageSig = 2;
     }
          //looking at last 2 measures
     else if (xPos >= xbar1S && yLine8L <= yPos && yPos <= yLine8H) {
 
-        if (counter < limit) {
+        if (counter < ((limit*1.5))) {
             counter++;
 
         }
 
         else {
             turnPageSig = 1;
+            //counter = 0;
             // counter = 0;
         }
 
     } 
     else {
-        counter = 0;
+       // counter = 0;
         turnPageSig = 0;
+    }
+
+    if (counter >= ((limit*1.5))) {
+        if (counter2 > limit2) {
+            counter = 0;
+            counter2 = 0;
+            turnPageSig = 0;
+            
+        }
+        else {
+            counter2++;
+            turnPageSig = 1;
+        }
     }
 
 
@@ -335,6 +358,10 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     //Format: row:bar:pageTurnsig (ex: 7:2:1)
     updateOutput(row,bar,turnPageSig);
 
+    iteration++;
+
+   
+
     resString = "";
 
     for (int j = 0; j < 9; j++) {
@@ -343,7 +370,10 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     resString = resString + output[9];
 
     //cout << row << ":" << bar << ":" << turnPageSig << endl;
-    cout << resString << endl;
+    if (iteration % 2 == 0) {
+        cout << resString << endl;
+    }
+    
 
     if (gaze_point->validity == TOBII_VALIDITY_VALID) {
 
@@ -359,8 +389,8 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
         lastYPos = yPos;
         // if((gaze_point->position_xy[0]*1000))
     }
-    /*cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar <<
-            ", row: " << row << ", turn page: "
+  /* /cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar <<
+            ", row: " << row << ", counter: " << counter << ", limit:" << ((limit*1.5)) << ", turn page: "
             << turnPageSig << "\n";*/
 
     if (eyeStream.is_open()) {
@@ -368,7 +398,7 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
        /* eyeStream << "Sample# " << iteration << " : x: " << xPos << ", y: " << yPos << ", turn page: "
             << turnPageSig << "\n";*/
        //eyeStream << xPos << ", " << yPos << "\n";
-       /* cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar << 
+      /* cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar << 
             ", row: " << row << ", turn page: "
             << turnPageSig << "\n";*/
         eyeStream << "Sample# " << iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar <<
