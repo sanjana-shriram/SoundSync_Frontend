@@ -370,9 +370,9 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     resString = resString + output[9];
 
     //cout << row << ":" << bar << ":" << turnPageSig << endl;
-    if (iteration % 2 == 0) {
-        cout << resString << endl;
-    }
+    //if (iteration % 2 == 0) {
+    cout << resString << endl;
+    //}
     
 
     if (gaze_point->validity == TOBII_VALIDITY_VALID) {

@@ -372,7 +372,7 @@ def mergeCommon(list):
 
 def getLiveAudioList(chroma_matrix, threshold=0.8, min_frames=100):
     selected_columns = []
-    durationThreshold = 10
+    durationThreshold = 15
     for col_index in range(chroma_matrix.shape[1]):
         column = chroma_matrix[:, col_index]
         if np.max(column) > threshold:
@@ -685,12 +685,26 @@ def getAudioData(recorder):
             liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
     return liveAudio
 
+def getDTW(refChroma, liveChroma):
+    Fs_ref = 48000
+    H = 128
+    C = cosine_distance(refChroma, liveChroma)
+    D, E, wp_full = compute_warping_path(C = C, implementation = "synctoolbox")
+    coordinates = np.column_stack((wp_full[0, :], wp_full[1, :]))
+    dx, dy = np.gradient(coordinates[:, 0]), np.gradient(coordinates[:, 1])
+    maxAvg, startPoint = highest_average_in_window(threshold_and_zero(dy, 1), liveChroma.shape[1])
+
+    
+    getMeasureNum(startPoint * (H/Fs_ref))
+    
+    print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}, page, measure, beat num: {getMeasureNum(startPoint * (H/Fs_ref))}")
+    return
 
 def alignAudio(refAudio, liveAudio):
     Fs_ref = 48000 #22050
     Fs_live = 16000
     N = 1024
-    H = 512
+    H = 128
     feature_rate = int(48100 / H)
 
     #make into chromas
@@ -847,6 +861,8 @@ def backend(request):
     #print("midi_path: ",midi_path) NOTE: use midipath
     # refMidiList = getMIDIList(path = r"./app/outputs/SoundSync_Demo_Dec9.mid") #NOTE: change to midi path variable
     refMidiList = getMIDIList(path = midi_path)
+    # refChroma = compute_chroma(librosa.load(path = midi_path, sr = 48000)[0], 48000, 1024, 128)
+    # print(len(refChroma))
     recorder = PvRecorder(frame_length=1024, device_index = 0)
     compute_chroma(np.zeros(1), recorder.sample_rate, 1024, 8192)
     recorder.start()
@@ -872,7 +888,13 @@ def backend(request):
                     liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
                 # _ = process.stdout.readline()
                 startTime = time.time()
-                globalEyeData = process.stdout.readline()
+                while True:
+                    startTime = time.time()
+                    globalEyeData = process.stdout.readline()
+                    endTime = time.time() - startTime
+                    if(endTime > 0.02):
+                        print("duration: ", endTime)
+                        break
                 print(f"time to readline is {time.time() - startTime}")
                 print(globalEyeData.decode('utf-8').split(","))
                 #check if turnPageSig says to turn the page
@@ -945,6 +967,7 @@ def backend(request):
             else:
                 endNote =  refMidiList[bestMatch[2] + 1]
             tempMeasureNum = endNote[2] #is 1 indexed
+            # getDTW(refChorma, liveChroma)
             row, bar = (tempMeasureNum - 1) // 4, (tempMeasureNum - 1) % 4
             bar += ((endNote[3] - 1) / 4)
             page_number = endNote[1] #endNote = (noteName, pageNum, measureNum, beatNum)
@@ -961,12 +984,12 @@ def backend(request):
                 turnPageSigList.append(elem[2])
             if turnPageSigList.count('1') > 6: #TODO fix later if need be
                 # print("turn page forward")
-                if page_number < 3 and justEyeCount > 50:
+                if page_number < 3 and justEyeCount > 100:
                     page_number += 1  
                     justEyeCount = 0
             elif turnPageSigList.count('2') > 6:
                 # print("turn page backwards")
-                if page_number > 1 and justEyeCount > 50:
+                if page_number > 1 and justEyeCount > 100:
                     page_number -= 1 
                     justEyeCount = 0
             justEyeCount += 1      
