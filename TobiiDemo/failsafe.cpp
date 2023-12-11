@@ -10,6 +10,10 @@
 #include <iomanip>
 #include <ctime>
 #include <thread>
+#include <windows.h>
+#include <cstring>
+#include <string>
+#include <algorithm>
 
 
 using namespace std;
@@ -58,6 +62,108 @@ bool seenLine5 = false;
 bool seenLine6 = false;
 bool seenLine7 = false;
 
+std::string output[] = { "-1:-1:0", "-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0","-1:-1:0",
+"-1:-1:0","-1:-1:0","-1:-1:0"};
+
+//Rohan's numbers
+double yLine1L = 300;
+double yLine1H = 350;
+double yLine2L = 385;
+double yLine2H = 440;
+double yLine3L = 455;
+double yLine3H = 500;
+double yLine4L = 540;
+double yLine4H = 585;
+double yLine5L = 620;
+double yLine5H = 675;
+double yLine6L = 690;
+double yLine6H = 750;
+double yLine7L = 775;
+double yLine7H = 830;
+double yLine8L = 850;
+double yLine8H = 950;
+
+double xbar1S = 65;
+double xbar1E = 140;
+double xbar2S = 140;
+double xbar2E = 205;
+double xbar3S = 205;
+double xbar3E = 260;
+double xbar4S = 260;
+double xbar4E = 341;
+
+std::string resString = "";
+
+
+
+void updateOutput(int newRow, int newBar, int newSig) {
+    for (int i = 0; i < 9; i++) {
+        output[i] = output[i + 1];
+    }
+    std::string n1 = std::to_string(newRow);
+    std::string n2 = std::to_string(newBar);
+    std::string n3 = std::to_string(newSig);
+
+    std::string res = n1 + ":" + n2 + ":" + n3;
+
+    output[9] = res;
+    return;
+
+
+
+}
+
+
+int calcRow(double y) {
+    if (yLine1L <= y && y <= yLine1H) {
+        return 0;
+    }
+    else if (yLine2L <= y && y <= yLine2H) {
+        return 1;
+    }
+    else if (yLine3L <= y && y <= yLine3H) {
+        return 2;
+    }
+    else if (yLine4L <= y && y <= yLine4H) {
+        return 3;
+    }
+    else if (yLine5L <= y && y <= yLine5H) {
+        return 4;
+    }
+    else if (yLine6L <= y && y <= yLine6H) {
+        return 5;
+    }
+    else if (yLine7L <= y && y <= yLine7H) {
+        return 6;
+    }
+    else if (yLine8L <= y && y <= yLine8H) {
+        return 7;
+    }
+
+    return -1;
+}
+
+
+int calcBar(double x) {
+    if (xbar1S <= x && x < xbar1E) {
+        return 0;
+    }
+    else if (xbar2S <= x && x < xbar2E) {
+        return 1;
+    }
+    else if (xbar3S <= x && x < xbar3E) {
+        return 2;
+    }
+    else if (xbar4S <= x && x <= xbar4E) {
+        return 3;
+    }
+    return -1;
+   
+}
+
+
+
+
 
 
 void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_data */)
@@ -67,7 +173,7 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     double xPos = gaze_point->position_xy[0] * 1000;
     double yPos = gaze_point->position_xy[1] * 1000;
     //override turn right button gaze on Rohan's computer numbers
-    if (360 <= xPos && xPos <= 460 && 250 <= yPos && yPos<=360) {
+    if (350 <= xPos && xPos <= 460 && 210 <= yPos && yPos<=300) {
         turnPageSig = 1;
     }
                           //override turn left button gaze on Rohan's computer numbers
@@ -75,7 +181,7 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
         turnPageSig = 2;
     }
          //looking at last 2 measures
-    else if (xPos >= 90 && yPos >= 880) {
+    else if (xPos >= xbar1S && yLine8L <= yPos && yPos <= yLine8H) {
 
         if (counter < limit) {
             counter++;
@@ -114,112 +220,130 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
     */
 
     //checking which line u r looking at
+    int bar = calcBar(xPos);
+    int row = calcRow(yPos);
+    if (bar == -1 || row == -1) {
+        bar = -1;
+        row = -1;
+    }
 
     
-    if (yLine0 - 20 <= yPos && yPos <= yLine0 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine0) {
-        seenLine0 = true;
-        //if (!nextPage) {
-            //cout << "New Line: 0" << endl;
-            start = std::chrono::system_clock::now();
-        //}
-        /*else {
-            ending = std::chrono::system_clock::now();
-            elapsed_seconds = ending - start;
-            cout << "New Line: 0" << endl;
-            cout << "Duration 7-0: " << elapsed_seconds.count() << endl;
-            start = std::chrono::system_clock::now();
-        }*/
-        
-    }
-    else if (yLine1 - 20 <= yPos && yPos <= yLine1 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 +10 && !seenLine1) {
-        seenLine1 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 1" << endl;
-       // cout << "Duration 0-1: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 1" << endl;
-        eyeStream << "Duration 0-1: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-    }
-    else if (yLine2 - 20 <= yPos && yPos <= yLine2 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine2) {
-        seenLine2 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 2" << endl;
-       // cout << "Duration 1-2: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 2" << endl;
-        eyeStream << "Duration 1-2: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-        
+    //if (yLine0 - 20 <= yPos && yPos <= yLine0 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine0) {
+    //    seenLine0 = true;
+    //    //if (!nextPage) {
+    //        //cout << "New Line: 0" << endl;
+    //        start = std::chrono::system_clock::now();
+    //    //}
+    //    /*else {
+    //        ending = std::chrono::system_clock::now();
+    //        elapsed_seconds = ending - start;
+    //        cout << "New Line: 0" << endl;
+    //        cout << "Duration 7-0: " << elapsed_seconds.count() << endl;
+    //        start = std::chrono::system_clock::now();
+    //    }*/
+    //    
+    //}
+    //else if (yLine1 - 20 <= yPos && yPos <= yLine1 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 +10 && !seenLine1) {
+    //    seenLine1 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 1" << endl;
+    //   // cout << "Duration 0-1: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 1" << endl;
+    //    eyeStream << "Duration 0-1: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //}
+    //else if (yLine2 - 20 <= yPos && yPos <= yLine2 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine2) {
+    //    seenLine2 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 2" << endl;
+    //   // cout << "Duration 1-2: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 2" << endl;
+    //    eyeStream << "Duration 1-2: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //    
 
-    }
-    else if (yLine3 - 20 <= yPos && yPos <= yLine3 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine3) {
-        seenLine3 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 3" << endl;
-       // cout << "Duration 2-3: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 3" << endl;
-        eyeStream << "Duration 2-3: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-    }
-    else if (yLine4 - 20 <= yPos && yPos <= yLine4 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine4) {
-        seenLine4 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 4" << endl;
-      //  cout << "Duration 3-4: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 4" << endl;
-        eyeStream << "Duration 3-4: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-    }
-    else if (yLine5 - 20 <= yPos && yPos <= yLine5 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine5) {
-        seenLine5 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 5" << endl;
-        //cout << "Duration 4-5: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 5" << endl;
-        eyeStream << "Duration 4-5: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-    }
-    else if (yLine6 - 20 <= yPos && yPos <= yLine6 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine6) {
-        seenLine6 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-       // cout << "New Line: 6" << endl;
-       // cout << "Duration 5-6: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 6" << endl;
-        eyeStream << "Duration 5-6: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-    }
-    else if (yLine7 - 20 <= yPos && yPos <= yLine7 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine7) {
-        seenLine7 = true;
-        ending = std::chrono::system_clock::now();
-        elapsed_seconds = ending - start;
-        //cout << "New Line: 7" << endl;
-       // cout << "Duration 6-7: " << elapsed_seconds.count() << endl;
-        eyeStream << "New Line: 7" << endl;
-        eyeStream << "Duration 6-7: " << elapsed_seconds.count() << endl;
-        start = std::chrono::system_clock::now();
-        nextPage = true;
-    }
-    else if (yLine7 - 20 <= yPos && yPos <= yLine7 + 20 && xBar3 - 10 <= xPos && xPos <= xBar3 + 10 && seenLine7) {
-        eyeStream << "Reached End of  Line: 7" << endl;
-        seenLine0 = false;
-        seenLine1 = false;
-        seenLine2 = false;
-        seenLine3 = false;
-        seenLine4 = false;
-        seenLine5 = false;
-        seenLine6 = false;
-        seenLine7 = false;
+    //}
+    //else if (yLine3 - 20 <= yPos && yPos <= yLine3 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine3) {
+    //    seenLine3 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 3" << endl;
+    //   // cout << "Duration 2-3: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 3" << endl;
+    //    eyeStream << "Duration 2-3: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //}
+    //else if (yLine4 - 20 <= yPos && yPos <= yLine4 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine4) {
+    //    seenLine4 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 4" << endl;
+    //  //  cout << "Duration 3-4: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 4" << endl;
+    //    eyeStream << "Duration 3-4: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //}
+    //else if (yLine5 - 20 <= yPos && yPos <= yLine5 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine5) {
+    //    seenLine5 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 5" << endl;
+    //    //cout << "Duration 4-5: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 5" << endl;
+    //    eyeStream << "Duration 4-5: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //}
+    //else if (yLine6 - 20 <= yPos && yPos <= yLine6 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine6) {
+    //    seenLine6 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //   // cout << "New Line: 6" << endl;
+    //   // cout << "Duration 5-6: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 6" << endl;
+    //    eyeStream << "Duration 5-6: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //}
+    //else if (yLine7 - 20 <= yPos && yPos <= yLine7 + 20 && xBar0 - 10 <= xPos && xPos <= xBar0 + 10 && !seenLine7) {
+    //    seenLine7 = true;
+    //    ending = std::chrono::system_clock::now();
+    //    elapsed_seconds = ending - start;
+    //    //cout << "New Line: 7" << endl;
+    //   // cout << "Duration 6-7: " << elapsed_seconds.count() << endl;
+    //    eyeStream << "New Line: 7" << endl;
+    //    eyeStream << "Duration 6-7: " << elapsed_seconds.count() << endl;
+    //    start = std::chrono::system_clock::now();
+    //    nextPage = true;
+    //}
+    //else if (yLine7 - 20 <= yPos && yPos <= yLine7 + 20 && xBar3 - 10 <= xPos && xPos <= xBar3 + 10 && seenLine7) {
+    //    eyeStream << "Reached End of  Line: 7" << endl;
+    //    seenLine0 = false;
+    //    seenLine1 = false;
+    //    seenLine2 = false;
+    //    seenLine3 = false;
+    //    seenLine4 = false;
+    //    seenLine5 = false;
+    //    seenLine6 = false;
+    //    seenLine7 = false;
 
-    }
+    //}
 
 
     //page turn stream
-    cout << turnPageSig << endl;
+    //Outputs to backend TODO
+    //Format: row:bar:pageTurnsig (ex: 7:2:1)
+    updateOutput(row,bar,turnPageSig);
+
+    resString = "";
+
+    for (int j = 0; j < 9; j++) {
+        resString = resString + output[j] + ",";
+    }
+    resString = resString + output[9];
+
+    //cout << row << ":" << bar << ":" << turnPageSig << endl;
+    cout << resString << endl;
 
     if (gaze_point->validity == TOBII_VALIDITY_VALID) {
 
@@ -235,12 +359,22 @@ void gaze_point_callback(tobii_gaze_point_t const* gaze_point, void* /* user_dat
         lastYPos = yPos;
         // if((gaze_point->position_xy[0]*1000))
     }
-
+    /*cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar <<
+            ", row: " << row << ", turn page: "
+            << turnPageSig << "\n";*/
 
     if (eyeStream.is_open()) {
         //eyeStream << gaze_point->position_xy[0] << "," << gaze_point->position_xy[1] << "\n";
-        eyeStream << "Sample# " << iteration << " :" << xPos << "," << yPos << ", turn page: "
+       /* eyeStream << "Sample# " << iteration << " : x: " << xPos << ", y: " << yPos << ", turn page: "
+            << turnPageSig << "\n";*/
+       //eyeStream << xPos << ", " << yPos << "\n";
+       /* cout << "Sample# "<< iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar << 
+            ", row: " << row << ", turn page: "
+            << turnPageSig << "\n";*/
+        eyeStream << "Sample# " << iteration << " : x: " << xPos << ", y: " << yPos << ", bar: " << bar <<
+            ", row: " << row << ", turn page: "
             << turnPageSig << "\n";
+
        
      
         iteration++;
@@ -261,16 +395,17 @@ void url_receiver(char const* url, void* user_data)
 int main()
 {
     // Create API
-    cout << "Code INIT..." << endl;
-    
+    //cout << "Code INIT..." << endl;
+   // sleep_for(seconds(8));
+   // cout << "Code Starts now" << endl;
     tobii_api_t* api = NULL;
     tobii_error_t result = tobii_api_create(&api, NULL, NULL);
     assert(result == TOBII_ERROR_NO_ERROR);
     tobii_version_t version;
     tobii_error_t version_error = tobii_get_api_version(&version);
-    if (version_error == TOBII_ERROR_NO_ERROR)
-        printf("Current API version: %d.%d.%d\n", version.major, version.minor,
-            version.revision);
+    //if (version_error == TOBII_ERROR_NO_ERROR)
+        //printf("Current API version: %d.%d.%d\n", version.major, version.minor,
+           // version.revision);
     
     
 
@@ -302,17 +437,19 @@ int main()
     
     
 
-    //sleep_for(seconds(4));
-    cout << "Code Start..." << endl;
+   
+    //cout << "Code Start..." << endl;
     limit = ((60 * 8) / tempo) * 30;
 
    
     //open file
-    eyeStream.open("eyeStream_sightread7.txt");
+   // eyeStream.open("test1_rr.txt");
 
     //while (true) {
+    
 
-    for (int i = 0; i < 100000; i++)
+    //for (int i = 0; i < 100000; i++)
+    while (true)
     {
         // Optionally block this thread until data is available. Especially useful if running in a separate thread.
        
@@ -366,7 +503,7 @@ int main()
 
 
     //close file
-    eyeStream.close();
+   // eyeStream.close();
 
     // Cleanup
     result = tobii_gaze_point_unsubscribe(device);

@@ -11,6 +11,7 @@ from PIL import Image
 import numpy as np
 import json
 import time
+import copy
 from string import digits
 import subprocess
 from django.http import JsonResponse
@@ -38,14 +39,18 @@ pdf_path = ""
 midi_path = ""
 instrument = ""
 images_list = []
-total_pages = 0
+total_pages = 3
 my_variable = 0
 bar = 0
 row = 0
 turnPage = 0
-eyeData = []
+eyeData = [] #TODO delete this
 prevAudio = None
 start = False
+process = None
+usingAudio = False
+usingEye = False
+
 
 
 # For Audoi AJAX Calls
@@ -75,6 +80,19 @@ def calibrate_action(request):
 def upload_action(request):
     context = {}
     return render(request, 'app/upload.html', context)
+
+
+def using_audio(request):
+    context = {}
+    global usingAudio
+    usingAudio = True
+    return render(request, 'app/play.html', context)
+
+def using_eye(request):
+    context = {}
+    global usingEye
+    usingEye = True
+    return render(request, 'app/play.html', context)
 
 
 def upload_pdf(request):
@@ -303,8 +321,8 @@ def threshold_and_zero(array, threshold):
     """
     return np.where(array > threshold, 0, array)
 
-def almostEqual(a, b, rel_tol=1e-09, abs_tol=0.0):
-    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+def almostEqual(x, y):
+    return abs(x - y) < 10**-9
 
 #TODO: might need to change percentage metric
 def needHarmonic(chroma_matrix):
@@ -415,12 +433,43 @@ def returnSmallest(arr):
             minDiff = end-start
     return res
 
+def calculateConfidence(sI, eI, prevAbsBeatNum, midi_list, note_list, eyeDataCopy):
+    #case where predicted eI note is less than beatNum should have bad confidence
+    #case where predicted eI note is = to beatNum should have bad confidence
+    global page_number
+    confidence = 0
+
+
+    numWrongNotes = (eI - sI) - (len(note_list) - 1)
+    noteName, pageNum, measureNum, beatNum, _ = midi_list[eI]
+    absBeatNum = ((pageNum - 1) * 32 * 4) + ((measureNum - 1) * 4) + (beatNum - 1) #THIS IS 0-INDEXED; BEAT 128 is page 2, measure 1, beat 1
+    if absBeatNum < prevAbsBeatNum:
+        confidence = 0.5
+        if pageNum == page_number:
+            confidence += 0.4
+    elif 0 <= absBeatNum - prevAbsBeatNum <= 8:
+        confidence += 2
+    elif 8 < absBeatNum - prevAbsBeatNum <= 16:
+        confidence += 1
+    else:
+        dif = (absBeatNum - prevAbsBeatNum) - 16 #how many beats after 4 measures it is
+        # confidence = 0.5 + (1 / (2 * (dif - 16)))
+        confidence = 0.5
+        if pageNum == page_number:
+            confidence += 0.4
+    # pageBeatNum = ((measureNum - 1) * 4) + (beatNum - 1)
+    # eyePageBeatNum = (eyeDataCopy.split(":")[1] * 4) + eyeDataCopy.split(":")[2]
+    # if abs(eyePageBeatNum - pageBeatNum) <= 8:
+    #     confidence += 10
+
+    return confidence
+
 # def bestMidiMatch(midi_total_list,note_gen_list):
 def bestMidiMatch(refMidiList, liveMidiList):
 
     midi_list = []
     for item in refMidiList:
-        (note,_,_,_) = item
+        (note,_,_,_,_) = item
         midi_list.append(note)
     
     note_list = []
@@ -441,16 +490,17 @@ def bestMidiMatch(refMidiList, liveMidiList):
             endIndex = startIndex + relEndIndex
             possibles.append((startIndex,endIndex))
 
-    res = returnSmallest(possibles)
-    print(f"res: {res}, possibles: {possibles}, noteList: {note_list}, midiList: {midi_list}")
-    print("\n\n\n\n\n")
-    #TODO: change this to not always give the first instance of match
-    if res == []:
-        confidence = 0 #TODO: eans no matches but still found notes
-    else: 
-        numWrongNotes = (res[0][1] - res[0][0]) - (len(note_list) - 1)
-        confidence = (len(note_list) - 1 - numWrongNotes) / len(note_list)
-    return confidence, res
+    smallPossibles = returnSmallest(possibles)
+    # print(f"res: {smallPossibles}, possibles: {possibles}, noteList: {note_list}, midiList: {midi_list}")
+    # print("\n\n\n\n\n")
+    res = []
+    for startIndex, endIndex in smallPossibles:
+        #math then append
+        # global eyeData
+        # eyeDataCopy = copy.copy(eyeData) #so that it doens't change in the middle of calcuating
+        confidence = calculateConfidence(startIndex, endIndex, absBeatNum, refMidiList, liveMidiList, None)
+        res.append((confidence,startIndex,endIndex))
+    return res
 
 def harmMidiMatch(refMidiList, liveAudio, liveSr):
     tempAudio = librosa.effects.harmonic(y = liveAudio, margin=1)
@@ -531,57 +581,53 @@ def getMIDIList(path):
             relMeasureNum = measureNum % 32
             pageNum = (measureNum // 32) + 1
             # print(f'NoteName: {noteName},absBeatNum: {absBeatNum}, relMeasureNum:{relMeasureNum + 1}, relBeatNum: {relBeatNum + 1}')
-            midiList.append((noteName, pageNum, relMeasureNum + 1, relBeatNum + 1))
+            absBeatNum = ((pageNum - 1) * 32 * 4) + ((relMeasureNum) * 4) + (relBeatNum)
+            midiList.append((noteName, pageNum, relMeasureNum + 1, relBeatNum + 1, absBeatNum+1)) #sending all 1-indexed
+    
+    
 
     return midiList
 
 def getEyeData():
-    global page_number
-    global images_list
-    global total_pages
-    global row
-    global bar
-    flippedPage = False
-    startTime = 0
+    global process
     # p = subprocess.Popen(args = [r"./CppDemo/x64/Debug/CppDemo.exe"], shell = True, #Caleb Help
     #                                stdin = subprocess.PIPE, stdout=subprocess.PIPE)
     
     
-    p = subprocess.Popen(args = [r".\TobiiDemo\x64\Debug\TobiiDemo.exe"], shell = True, #Rohan Help
+    process = subprocess.Popen(args = [r".\TobiiDemo\x64\Debug\TobiiDemo.exe"], shell = True, #Rohan Help
                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE)
-
-    while True:
-        output = p.stdout.readline()
-        print("output: ", output)
-        # print("total pages", total_pages)
-        if output == b'' and p.poll() is not None:
-            print("broke out of loop\n")
-            break
-        if output:
-            if '1' in output.decode('utf-8'):
-                print(f"saw a 1 should've flipped, {page_number}\n")
-                if page_number < total_pages and not flippedPage:
-                    flippedPage = True
-                    startTime = time.time()
-                    print(f"saw a 1 should've flipped, {page_number}\n")
-                    page_number += 1
-                bar = 0
-                row = 0
-            elif '2' in output.decode('utf-8'):
-                print(f"saw a 2 should've flipped, {page_number}\n")
-                if page_number > 1 and not flippedPage:
-                    flippedPage = True
-                    startTime = time.time()
-                    page_number -= 1
-                bar = 0
-                row = 0
+    return
+    # while True:
+    #     output = p.stdout.readline()
+    #     print("output: ", output)
+    #     # print("total pages", total_pages)
+    #     if output == b'' and p.poll() is not None:
+    #         print("broke out of loop\n")
+    #         break
+    #     if output:
+    #         if '1' in output.decode('utf-8'):
+    #             print(f"saw a 1 should've flipped, {page_number}\n")
+    #             if page_number < total_pages and not flippedPage:
+    #                 flippedPage = True
+    #                 startTime = time.time()
+    #                 print(f"saw a 1 should've flipped, {page_number}\n")
+    #                 page_number += 1
+    #             bar = 0
+    #             row = 0
+    #         elif '2' in output.decode('utf-8'):
+    #             print(f"saw a 2 should've flipped, {page_number}\n")
+    #             if page_number > 1 and not flippedPage:
+    #                 flippedPage = True
+    #                 startTime = time.time()
+    #                 page_number -= 1
+    #             bar = 0
+    #             row = 0
                    
-        if flippedPage and (time.time() - startTime) > 1:
-            flippedPage = False
-        print("page number", page_number, "\n")
-        print("total pages:", total_pages, "flippedPage", flippedPage,"\n")
-         
-    return 
+    #     if flippedPage and (time.time() - startTime) > 1:
+    #         flippedPage = False
+    #     print("page number", page_number, "\n")
+    #     print("total pages:", total_pages, "flippedPage", flippedPage,"\n")
+ 
 
 # def getEyeData():
 #     global page_number
@@ -630,6 +676,15 @@ def getMeasureNum(time):
 #                                    stdin = subprocess.PIPE, stdout=subprocess.PIPE)
 #     stdout, stderr = p.communicate()
 #     return stdout.decode('utf-8')
+
+def getBestMatch(matchList):
+    bestMatch = None
+    bestConfidence = -1 * np.inf
+    for elem in matchList:
+        confidence, startIndex, endIndex = elem
+        if confidence > bestConfidence:
+            bestMatch = elem
+    return bestMatch
 
 def getAudioData(recorder):
     recorder.start()
@@ -682,20 +737,6 @@ def alignAudio(refAudio, liveAudio):
     print(f"maxAvg: {maxAvg}, startFrame: {startPoint} , startTime: {startPoint * (H/Fs_ref)}, page, measure, beat num: {getMeasureNum(startPoint * (H/Fs_ref))}")
     return
 
-# Sending Audio Data to Frontend AJAX
-# def sendCursorData(request):
-    # global pageNum
-    # global measureNum
-    # global relBeatNum
-    # global absBeatNum
-
-    # pageNum = 32
-    # absBeatNum = 9
-
-    # return JsonResponse({'paegNum': pageNum,
-    #                      'measureNum': measureNum,
-    #                      'relBeatNum': relBeatNum,
-    #                      'absBeatNum': absBeatNum})
 
 
 # # on backend, want to start right after files submitted
@@ -705,6 +746,115 @@ def alignAudio(refAudio, liveAudio):
 # # change page_number appropriately
 # # need head tracking function call somehow
 
+
+
+
+# def backend(request):
+#     context = {}
+#     global page_number
+#     global images_list
+#     # global prevAudio
+#     global refMidiList
+#     global midi_path
+#     global start
+#     global bar
+#     global row
+#     start = True
+    
+#     # SETUP
+#     #print("midi_path: ",midi_path) NOTE: use midipath
+#     refMidiList = getMIDIList(path = r"./app/outputs/SoundSync_Demo_Dec9.mid") #NOTE: change to midi path variable
+#     recorder = PvRecorder(frame_length=1024, device_index = 0)
+#     compute_chroma(np.zeros(1), recorder.sample_rate, 1024, 8192)
+#     recorder.start()
+#     getEyeData() #start eyetracking pipes in global process
+
+#     flippedPage = False
+#     flipCounter = 0
+#     count = 0
+#     startFlag = False
+#     while True:
+#         if usingAudio:
+#             liveAudio = None
+#             for _ in range(50):
+#                 frame = recorder.read()
+#                 # print(time.time() - startTime)
+#                 npFrame = np.asarray(frame)
+#                 npFrame = np.divide(npFrame, 2**15)
+#                 # print(npFrame)
+#                 if type(liveAudio) == type(None):
+#                     liveAudio = npFrame
+#                 else: 
+#                     liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
+#             # if count % 5 == 0:
+#             #     eyeData = process.stdout.readline()
+#             #     if not flippedPage and eyeData.split(":")[2] != 0:
+#             #         if eyeData.split(":")[2]:
+#             #             page_number -= 1
+#             #         else:
+#             #             page_number += 1
+#             #         flippedPage = True
+#             #         flipCounter = 0
+#             # if flipCounter >= 15:
+#             #     flippedPage = False
+#             # flipCounter += 1
+#             # count += 1
+#         print(f"size of liveaudio array is {liveAudio.shape}")
+#         startTime = time.time()
+#         liveChroma = compute_chroma(liveAudio, 16000, 1024, 128)
+#         print(f"time it took to compute chroma: {time.time() - startTime}")
+#         # plot_chromagram(liveChroma[:, :30 * 50], Fs=50, title='Chroma representation for version 2', figsize=(9,3))
+#         # plt.show()
+#         liveMidiList = getLiveAudioList(liveChroma)
+#         print(f"liveMidiList: {liveMidiList}")
+#         print(f"time it took to compute liveMIDIList: {time.time() - startTime}")
+#         confidence, matchList = bestMidiMatch(refMidiList, liveMidiList)
+#         if confidence == -1 or matchList == []:
+#             # print(f"confidence: {confidence} matchlist: {matchList}")
+#             print("\n\n")
+#             print(f"continued... time it took to get to here is {time.time() - startTime}")
+#             continue
+#         elif not startFlag:
+#             startFlag = True
+#         #doesn't update if music has not been heard yet   
+#         if not startFlag: #TODO: style better later
+#             continue
+#         print(f"time it took to get bestMidiMatch: {time.time() - startTime}")
+#         # if matchList == []:
+#         #     print(f"continued... time it took to get to here is {time.time() - startTime}")
+#         #     continue
+#         bestMatch = getBestMatch(matchList)
+#         # res = refMidiList[matchList[0][0]:matchList[0][1] + 1] 
+#         # print(f"res: {res}")
+#         # _, endNote = refMidiList[matchList[0][0]], refMidiList[matchList[0][1] + 1]
+#         endNote =  refMidiList[bestMatch[2] + 1]
+#         tempMeasureNum = endNote[2]
+#         row, bar = tempMeasureNum // 4, (tempMeasureNum - 1) % 4
+#         bar += ((endNote[3] - 1) / 4)
+#         page_number = endNote[1] #endNote = (noteName, pageNum, measureNum, beatNum)
+#         print(f"total time = {time.time() - startTime}")
+#         print("mathcList: ", matchList)
+#         # print("refmidi: ",refMidiList, "\n\n")
+#         print(f"pageNum: {page_number} measureNum: {tempMeasureNum} (1-indexed) beatNum: {endNote[3]} row: {row} bar: {bar} endnote: {endNote}")
+
+#     recorder.delete()
+#     return render(request, 'app/play.html', context)
+
+
+
+
+    
+  
+# def checkWrongPrediction(refMidi, bestMatch):
+#     conf,start,end = bestMatch
+#     #(_,_,_,_, absBeatNum) = refMidi[end]
+#     for elem in refMidi:
+#         (_,_,_,_, absBeatNum) = elem
+#         if(almostEqual(predBeatNum,absBeatNum)):
+#             return True
+    
+#     return False
+        
 
 
 
@@ -719,152 +869,79 @@ def backend(request):
     global bar
     global row
     start = True
-    
-    
+    global usingAudio
+    global usingEye
+
+    # SETUP
     #print("midi_path: ",midi_path) NOTE: use midipath
-    refMidiList = getMIDIList(path = r"./app/outputs/SoundSync_Demo_Dec9.mid") #NOTE: change to midi path variable
+    # refMidiList = getMIDIList(path = r"./app/outputs/SoundSync_Demo_Dec9.mid") #NOTE: change to midi path variable
+    refMidiList = getMIDIList(path = midi_path)
     recorder = PvRecorder(frame_length=1024, device_index = 0)
     compute_chroma(np.zeros(1), recorder.sample_rate, 1024, 8192)
     recorder.start()
-   
-    #getEyeData()
+    getEyeData() #start eyetracking pipes in global process
+    justEyeCount = 0
+
     while True:
-    # for _ in range(10):
-        liveAudio = None
-        for _ in range(50):
-            frame = recorder.read()
-            # print(time.time() - startTime)
-            npFrame = np.asarray(frame)
-            npFrame = np.divide(npFrame, 2**15)
-            # print(npFrame)
-            if type(liveAudio) == type(None):
-                liveAudio = npFrame
-            else: 
-                liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
-        print(f"size of liveaudio array is {liveAudio.shape}")
-        startTime = time.time()
-        liveChroma = compute_chroma(liveAudio, 16000, 1024, 128)
-        print(f"time it took to compute chroma: {time.time() - startTime}")
-        # plot_chromagram(liveChroma[:, :30 * 50], Fs=50, title='Chroma representation for version 2', figsize=(9,3))
-        # plt.show()
-        liveMidiList = getLiveAudioList(liveChroma)
-        print(f"liveMidiList: {liveMidiList}")
-        print(f"time it took to compute liveMIDIList: {time.time() - startTime}")
-        confidence, matchList = bestMidiMatch(refMidiList, liveMidiList)
-        if confidence == -1 or matchList == []:
-            # print(f"confidence: {confidence} matchlist: {matchList}")
-            print("\n\n")
-            print(f"continued... time it took to get to here is {time.time() - startTime}")
-            continue
-        print(f"time it took to get bestMidiMatch: {time.time() - startTime}")
-        # if matchList == []:
-        #     print(f"continued... time it took to get to here is {time.time() - startTime}")
-        #     continue
-        res = refMidiList[matchList[0][0]:matchList[0][1] + 1] 
-        print(f"res: {res}")
-        _, endNote = refMidiList[matchList[0][0]], refMidiList[matchList[0][1] + 1]
-        tempMeasureNum = endNote[2]
-        row, bar = tempMeasureNum // 4, (tempMeasureNum - 1) % 4
-        bar += ((endNote[3] - 1) / 4)
-        page_number = endNote[1] #endNote = (noteName, pageNum, measureNum, beatNum)
-        print(f"total time = {time.time() - startTime}")
-        print("mathcList: ", matchList)
-        # print("refmidi: ",refMidiList, "\n\n")
-        print(f"pageNum: {page_number} measureNum: {tempMeasureNum} (1-indexed) beatNum: {endNote[3]} row: {row} bar: {bar} endnote: {endNote}")
+        # print(usingAudio, usingEye)
+        if usingAudio and usingEye:
+            pass
+            #do both
+        elif usingAudio and not usingEye:
+            #do audio
+            liveAudio = None
+            for i in range(50):
+                frame = recorder.read()
+                # print(time.time() - startTime)
+                npFrame = np.asarray(frame)
+                npFrame = np.divide(npFrame, 2**15)
+                # print(npFrame)
+                if type(liveAudio) == type(None):
+                    liveAudio = npFrame
+                else: 
+                    liveAudio = np.concatenate((liveAudio, npFrame), axis = None)
+            liveChroma = compute_chroma(liveAudio, 16000, 1024, 128)
+            liveMidiList = getLiveAudioList(liveChroma)
+            matchList = bestMidiMatch(refMidiList, liveMidiList) 
+            if matchList == [] or matchList[0] == -1:
+                # print(f"confidence: {confidence} matchlist: {matchList}")
+                # print("\n\n")
+                # print(f"continued... time it took to get to here is {time.time() - startTime}")
+                continue
+            bestMatch = getBestMatch(matchList)  
+            if bestMatch[2] + 1 >= len(refMidiList):
+                endNote = refMidiList[-1]
+            else:
+                endNote =  refMidiList[bestMatch[2] + 1]
+            tempMeasureNum = endNote[2] #is 1 indexed
+            row, bar = (tempMeasureNum - 1) // 4, (tempMeasureNum - 1) % 4
+            bar += ((endNote[3] - 1) / 4)
+            page_number = endNote[1] #endNote = (noteName, pageNum, measureNum, beatNum)
+            print(f"capybara pageNum {page_number}, row {row}, bar {bar}, endNote {endNote}")
+            
 
-    recorder.delete()
-    return render(request, 'app/play.html', context)
+        elif usingEye and not usingAudio:
+            eyeDataList = process.stdout.readline().decode('utf-8').split(",")
+            turnPageSigList = []
+            for elem in eyeDataList:
+                # print("stuff: ",elem, elem.split(":")[2])
+                elem = elem.split(":")
+                turnPageSigList.append(elem[2])
+            if turnPageSigList.count('1') > 6: #TODO fix later if need be
+                # print("turn page forward")
+                if page_number < 3 and justEyeCount > 50:
+                    page_number += 1  
+                    justEyeCount = 0
+            elif turnPageSigList.count('2') > 6:
+                # print("turn page backwards")
+                if page_number > 1 and justEyeCount > 50:
+                    page_number -= 1 
+                    justEyeCount = 0
+            justEyeCount += 1      
+        else:
+            #not using either
+            pass
 
-#     #do one offs here
-#     print(midi_path)
-#     refAudio, _ = librosa.load(path = midi_path, sr = 48000)
-#     refMidiList = getMIDIList(midi_path)
-#     refChroma = compute_chroma(librosa.effects.harmonic(y = refAudio, margin=1), sr = 48000,
-#                                 N = 1024, H = 512)
-#     prevAudio = None
-#     recorder = PvRecorder(frame_length=1024, device_index=0)
-#     storedAudio = None
-#     print("\n done with backend one offs \n")
-
-#     while True:
-#         if prevAudio is None:
-#             curAudio = recordAudio(recorder)
-#             prevAudio = curAudio
-#             continue
-#         liveSr = 16000 #sampling rate of Pvrecorder
-#         startTime = time.time()
-#         print("\n\n starting to make processes \n\n")
-#         # Create two processes with arguments
-#         regMidiAlignProcess = multiprocessing.Process(target=bestMidiMatch, args=(refMidiList, prevAudio, liveSr))
-#         harmMidiAlignProcess = multiprocessing.Process(target=harmMidiMatch, args=(refMidiList, prevAudio, liveSr))
-#         curAudioProcess = multiprocessing.Process(target = recordAudio)
-#         dtwProcess = multiprocessing.Process(target = getDTW, args = (refChroma, storedAudio))
-#         eyeDataProcess = multiprocessing.Process(target = getEyeData)
-
-#         print("\n\n starting processes \n\n")
-#         # Start the processes
-#         regMidiAlignProcess.start()
-#         print("\n\n made it past one start call \n\n")
-#         eyeDataProcess.start()
-#         harmMidiAlignProcess.start()
-#         curAudioProcess.start()
-
-#         print("\n\n started proccessess \n\n")
-#         ranDTW = False
-#         if dtwCount >= 3:
-#             dtwProcess.start()
-#             ranDTW = True
-#         else: 
-#             dtwCount += 1
-
-#         print("\n\n here here \n\n")
-#         # Wait for process 1 to finish and get its result
-#         regMidiConf, regMidiAlign = regMidiAlignProcess.join()
-
-#         # Check the result of process 1
-#         needHarmonicFlag = needHarmonic(regMidiAlign)
-#         if not needHarmonicFlag:
-#             # Process 1 returned True, terminate process 2
-#             harmMidiAlignProcess.terminate()
-#             harmMidiAlignProcess.join()
-#             harmMidiAlign = 0, []
-#             print("harmMidiAlign terminated")
-#         else:
-#             # Process 1 returned False, let process 2 continue
-#             harmMidiConf, harmMidiAlign = harmMidiAlignProcess.join()
-#             print("harmMidiAlign continued")
-#         if ranDTW:
-#             dtwRes = dtwProcess.join()
-#             dtwConfidence, _, dtwStartTime = dtwRes
-#         else:
-#             dtwRes = None
-
-#         audioAlignmentTime = time.time() - startTime
-#         print(f"time for parallel audio alignment {audioAlignmentTime}")
-
-#         eyeData = eyeDataProcess.join()
-#         eyeDataTime = time.time() - startTime
-#         print(f"time for parallel eye and audio {eyeDataTime}")
-
-
-#         # finalSig = monitorSignals() #this will just update everything
-#         # updateCursor(finalSig)
-
-#         while curAudioProcess.is_alive():
-#             tempEyeData = getEyeData()
-#             # monitorSignals(eyeTrack = tempEyeData, midAlign = [], harMidAlign = [], dtw = None)
-
-
-#         curAudio = curAudioProcess.join()
-#         if not ranDTW:
-#             if storedAudio is None:
-#                 storedAudio = curAudio
-#             else:
-#                 storedAudio = np.concatenate((storedAudio, curAudio), axis = None)
-#         ranDTW = False
-#         prevAudio = curAudio
-#     context['images_list'] = images_list
-#     context['image'] = 'page'
 
       
 

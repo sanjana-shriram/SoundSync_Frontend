@@ -15,5 +15,7 @@ urlpatterns = [
     path('backend', views.backend, name='backend'),
     path('get-global', views.get_list_json_dumps_serializer),
     path('get-var', views.get_variable, name='get-var'),
+    path('usingAudio', views.using_audio, name='usingAudio'),
+    path('usingEye', views.using_eye, name='usingEye'),
 
 ]
